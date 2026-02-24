@@ -3,6 +3,7 @@ import HeroSection from "@/components/HeroSection";
 import EngagementsSection from "@/components/EngagementsSection";
 import PresentationSection from "@/components/PresentationSection";
 import ServicesSection from "@/components/ServicesSection";
+import PropertiesSection from "@/components/PropertiesSection";
 import PricingSection from "@/components/PricingSection";
 import WhyUsSection from "@/components/WhyUsSection";
 import ContactSection from "@/components/ContactSection";
