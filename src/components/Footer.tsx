@@ -1,12 +1,14 @@
+import AnimatedLogo from "./AnimatedLogo";
+
 const Footer = () => {
   return (
     <footer className="bg-card border-t border-border py-12">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-3 gap-8 mb-8">
           <div>
-            <h3 className="font-serif text-xl font-bold text-primary mb-4">
-              Conciergerie <span className="text-foreground">Kénitra</span>
-            </h3>
+            <div className="mb-4">
+              <AnimatedLogo size="sm" />
+            </div>
             <p className="text-muted-foreground text-sm leading-relaxed">
               Votre partenaire de confiance pour la gestion locative premium à Kénitra.
             </p>

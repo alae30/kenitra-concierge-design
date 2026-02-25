@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
+import AnimatedLogo from "./AnimatedLogo";
 
 const navLinks = [
   { label: "Accueil", href: "#hero" },
@@ -27,8 +28,8 @@ const Navbar = () => {
       }`}
     >
       <div className="container mx-auto flex items-center justify-between py-4 px-4">
-        <a href="#hero" className="font-serif text-2xl font-bold text-primary">
-          Conciergerie <span className="text-foreground">Kénitra</span>
+        <a href="#hero">
+          <AnimatedLogo size="sm" />
         </a>
 
         {/* Desktop */}
