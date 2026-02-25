@@ -7,7 +7,7 @@ const Footer = () => {
         <div className="grid md:grid-cols-3 gap-8 mb-8">
           <div>
             <div className="mb-4">
-              <AnimatedLogo size="sm" />
+              <AnimatedLogo size="md" />
             </div>
             <p className="text-muted-foreground text-sm leading-relaxed">
               Votre partenaire de confiance pour la gestion locative premium à Kénitra.
