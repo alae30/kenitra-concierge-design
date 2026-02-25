@@ -29,7 +29,7 @@ const Navbar = () => {
     >
       <div className="container mx-auto flex items-center justify-between py-4 px-4">
         <a href="#hero">
-          <AnimatedLogo size="sm" />
+          <AnimatedLogo size="md" />
         </a>
 
         {/* Desktop */}
