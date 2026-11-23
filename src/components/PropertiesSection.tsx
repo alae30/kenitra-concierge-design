@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Star, MapPin, Users, Bed, Bath, Wifi, Car, Wind } from "lucide-react";
 import { useState } from "react";
+import BookingDialog from "./BookingDialog";
 
 const properties = [
   {
@@ -159,12 +160,7 @@ const PropertyCard = ({ property, index }: { property: typeof properties[0]; ind
             <span className="text-2xl font-bold text-primary">{property.price}</span>
             <span className="text-foreground/50 text-sm ml-1">MAD / nuit</span>
           </div>
-          <a
-            href="#contact"
-            className="bg-primary/10 text-primary text-xs font-semibold px-4 py-2 rounded-lg hover:bg-primary hover:text-primary-foreground transition-colors"
-          >
-            Réserver
-          </a>
+          <BookingDialog property={property} />
         </div>
       </div>
     </motion.div>
@@ -188,13 +184,17 @@ const PropertiesSection = () => {
             Découvrez nos <span className="text-primary">propriétés</span>
           </h2>
           <p className="text-foreground/60 max-w-2xl mx-auto text-lg">
-            Des logements soigneusement sélectionnés et gérés avec excellence pour offrir 
-            une expérience inoubliable à vos voyageurs.
+            Logements et tarifs d’exemple pour essayer le parcours de réservation.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {properties.map((property, index) => (
+        <div className="mx-auto max-w-md">
+          <PropertyCard property={properties[0]} index={0} />
+        </div>
+
+        <h3 className="mb-6 mt-14 font-serif text-2xl font-bold">Autres logements</h3>
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {properties.slice(1).map((property, index) => (
             <PropertyCard key={property.id} property={property} index={index} />
           ))}
         </div>
