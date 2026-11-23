@@ -8,7 +8,12 @@ const properties = [
     id: 1,
     title: "Appartement Vue Mer — Marina Kénitra",
     location: "Marina, Kénitra",
-    price: 450,
+    price: 500,
+    weekendPrice: 700,
+    gallery: [
+      "https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=1000&q=85",
+      "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=1000&q=85",
+    ],
     rating: 4.9,
     reviews: 47,
     guests: 4,
@@ -97,7 +102,8 @@ const amenityIcons: Record<string, React.ReactNode> = {
 };
 
 const PropertyCard = ({ property, index }: { property: typeof properties[0]; index: number }) => {
-  const [imgLoaded, setImgLoaded] = useState(false);
+  const images = [property.image, ...(property.gallery ?? [])];
+  const [activeImage, setActiveImage] = useState(0);
 
   return (
     <motion.div
@@ -110,12 +116,10 @@ const PropertyCard = ({ property, index }: { property: typeof properties[0]; ind
       {/* Image */}
       <div className="relative overflow-hidden aspect-[4/3]">
         <img
-          src={property.image}
-          alt={property.title}
-          onLoad={() => setImgLoaded(true)}
-          className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ${imgLoaded ? "opacity-100" : "opacity-0"}`}
+          src={images[activeImage]}
+          alt={`Photo d’illustration ${activeImage + 1} du logement`}
+          className="h-full w-full object-cover"
         />
-        {!imgLoaded && <div className="absolute inset-0 bg-muted animate-pulse" />}
         {property.superhost && (
           <span className="absolute top-3 left-3 bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full">
             Superhost
@@ -127,6 +131,18 @@ const PropertyCard = ({ property, index }: { property: typeof properties[0]; ind
           <span className="text-foreground/50">({property.reviews})</span>
         </div>
       </div>
+
+      {images.length > 1 && (
+        <div className="flex gap-2 px-5 pt-4" role="group" aria-label="Photos d’illustration">
+          {images.map((image, index) => (
+            <button key={image} type="button" aria-label={`Afficher la photo ${index + 1}`}
+              aria-pressed={activeImage === index} onClick={() => setActiveImage(index)}
+              className="overflow-hidden rounded-md border-2 border-transparent aria-pressed:border-primary">
+              <img src={image} alt="" className="h-12 w-16 object-cover" />
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Content */}
       <div className="p-5">
@@ -155,10 +171,11 @@ const PropertyCard = ({ property, index }: { property: typeof properties[0]; ind
         </div>
 
         {/* Price + CTA */}
-        <div className="flex items-end justify-between border-t border-border/30 pt-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/30 pt-4">
           <div>
             <span className="text-2xl font-bold text-primary">{property.price}</span>
-            <span className="text-foreground/50 text-sm ml-1">MAD / nuit</span>
+            <span className="text-foreground/70 text-sm ml-1">MAD / nuit{property.weekendPrice && " en semaine"}</span>
+            {property.weekendPrice && <p className="text-sm text-foreground/70">{property.weekendPrice} MAD / nuit le week-end</p>}
           </div>
           <BookingDialog property={property} />
         </div>
@@ -189,6 +206,7 @@ const PropertiesSection = () => {
         </motion.div>
 
         <div className="mx-auto max-w-md">
+          <h3 className="mb-4 font-serif text-2xl font-bold">Logement principal</h3>
           <PropertyCard property={properties[0]} index={0} />
         </div>
 

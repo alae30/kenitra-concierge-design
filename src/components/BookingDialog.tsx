@@ -7,7 +7,7 @@ const demoTerms = "Simulation de réservation. Les dates et les tarifs sont indi
 const dayMilliseconds = 86_400_000;
 const money = new Intl.NumberFormat("fr-MA", { style: "currency", currency: "MAD" });
 
-type Property = { title: string; price: number; guests: number };
+type Property = { title: string; price: number; weekendPrice?: number; guests: number };
 
 function IdentityPhoto({ side }: { side: "Recto" | "Verso" }) {
   const [file, setFile] = useState<File | null>(null);
@@ -53,8 +53,17 @@ function BookingForm({ property }: { property: Property }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const pointer = useRef<number | null>(null);
   const today = new Intl.DateTimeFormat("sv-SE", { timeZone: "Africa/Casablanca" }).format(new Date());
-  const nights = (Date.parse(departure) - Date.parse(arrival)) / dayMilliseconds;
-  const total = nights > 0 ? money.format(nights * property.price) : null;
+  const start = Date.parse(arrival);
+  const end = Date.parse(departure);
+  const nights = (end - start) / dayMilliseconds;
+  let weekendNights = 0;
+  for (let day = start; day < end; day += dayMilliseconds) {
+    const weekday = new Date(day).getUTCDay();
+    if (weekday === 0 || weekday === 6) weekendNights++;
+  }
+  const amount = (nights - weekendNights) * property.price
+    + weekendNights * (property.weekendPrice ?? property.price);
+  const total = nights > 0 ? money.format(amount) : null;
 
   function draw(event: PointerEvent<HTMLCanvasElement>, start = false) {
     if (start) {
@@ -126,13 +135,18 @@ function BookingForm({ property }: { property: Property }) {
 
   return (
     <form className="grid gap-5" onSubmit={download}>
+      {property.weekendPrice !== undefined && (
+        <p className="text-sm text-muted-foreground">
+          {property.price} MAD par nuit du lundi au vendredi · {property.weekendPrice} MAD le samedi et le dimanche
+        </p>
+      )}
       <div className="grid grid-cols-2 gap-3">
         <label className="grid gap-2 text-sm">Arrivée<Input type="date" required min={today} value={arrival} onChange={(event) => setArrival(event.target.value)} /></label>
         <label className="grid gap-2 text-sm">Départ<Input type="date" required min={arrival || today} value={departure} onChange={(event) => setDeparture(event.target.value)} /></label>
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="grid gap-2 text-sm">Voyageurs<Input name="guests" type="number" min={1} max={property.guests} defaultValue={1} required /></label>
-        <output className="self-end pb-2 text-sm" aria-live="polite">{total ? `${nights} nuit(s) · ${total}` : `${money.format(property.price)} / nuit`}</output>
+        <output className="self-end pb-2 text-sm" aria-live="polite">{total ? `${nights} ${nights === 1 ? 'nuit' : 'nuits'} · ${total}` : `${money.format(property.price)} / nuit`}</output>
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="grid gap-2 text-sm">Nom fictif<Input name="name" required maxLength={100} placeholder="Camille Exemple" /></label>
