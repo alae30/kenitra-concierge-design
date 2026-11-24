@@ -49,7 +49,7 @@ body {
 .intro { font-size: clamp(1rem, 2vw, 1.2rem); line-height: 1.65; max-width: 36rem; color: hsl(var(--muted-foreground)); }
 .stay-button { display: inline-block; margin-top: 24px; padding: 14px 22px; border-radius: 999px; background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); font-weight: 600; }
 .stay-button:hover { background: #6c3224; }
-.hero-photo img, .detail-photo img { width: 100%; object-fit: cover; background: hsl(var(--muted)); }
+.hero-photo > img:first-child, .detail-photo img { width: 100%; object-fit: cover; background: hsl(var(--muted)); }
 .hero-photo {
   position: relative;
   isolation: isolate;
@@ -64,7 +64,7 @@ body {
   border: 1px solid #ab614b;
   border-radius: 48% 48% 28px 28px / 30% 30% 28px 28px;
 }
-.hero-photo > img {
+.hero-photo > img:first-child {
   aspect-ratio: 1.16;
   object-position: 50% 64%;
   border-radius: 48% 48% 18px 18px / 30% 30% 18px 18px;
