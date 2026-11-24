@@ -170,7 +170,7 @@ export function BookingForm({ property }: { property: Property }) {
         <p className="text-sm text-muted-foreground">{demoTerms}</p>
         <div className="grid gap-2">
           <a href="./reglement.html" target="_blank" rel="noopener" className="text-sm font-semibold text-primary underline underline-offset-4">
-            Lire le règlement du logement (nouvel onglet)
+            Lire le règlement du logement
           </a>
           <label className="flex items-start gap-2 text-sm">
             <input className="mt-1" type="checkbox" required />J’accepte le règlement du logement.
