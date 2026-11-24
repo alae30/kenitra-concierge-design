@@ -1,42 +1,73 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap");
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+:root {
+  --background: 36 40% 96%;
+  --foreground: 29 25% 16%;
+  --card: 38 50% 99%;
+  --card-foreground: 29 25% 16%;
+  --popover: 38 50% 99%;
+  --popover-foreground: 29 25% 16%;
+  --primary: 142 21% 24%;
+  --primary-foreground: 38 50% 98%;
+  --secondary: 35 34% 89%;
+  --secondary-foreground: 29 25% 16%;
+  --muted: 35 33% 91%;
+  --muted-foreground: 30 14% 37%;
+  --accent: 35 34% 89%;
+  --accent-foreground: 29 25% 16%;
+  --border: 34 24% 82%;
+  --input: 34 24% 78%;
+  --ring: 142 21% 35%;
+  font-family: "DM Sans", sans-serif;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+body { background: hsl(var(--background)); color: hsl(var(--foreground)); font-family: inherit; }
+.stay-shell { width: min(100% - 48px, 1200px); margin-inline: auto; }
+.stay-header { border-bottom: 1px solid hsl(var(--border)); }
+.header-inner { display: flex; justify-content: space-between; align-items: center; gap: 24px; min-height: 86px; }
+.stay-brand { font: 2rem/1 "Instrument Serif", Georgia, serif; }
+.stay-brand small { display: block; margin-top: 6px; font: 600 .75rem/1.2 "DM Sans", sans-serif; letter-spacing: .11em; text-transform: uppercase; }
+.stay-header nav { display: flex; gap: clamp(12px, 4vw, 40px); flex-wrap: wrap; font-size: .98rem; }
+.stay-header nav a { padding-block: 8px; border-bottom: 1px solid transparent; }
+.stay-header nav a[aria-current], .stay-header nav a:hover { border-color: hsl(var(--primary)); }
+.home-hero { display: grid; grid-template-columns: .9fr 1.1fr; gap: clamp(32px, 6vw, 92px); align-items: center; padding-block: clamp(40px, 8vw, 100px); }
+.eyebrow { color: #70513b; font-size: .78rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.home-hero h1, .page-intro h1 { font: 400 clamp(3.3rem, 7vw, 7rem)/.93 "Instrument Serif", Georgia, serif; margin: 16px 0 22px; }
+.home-hero em { color: hsl(var(--primary)); }
+.intro { font-size: clamp(1rem, 2vw, 1.2rem); line-height: 1.65; max-width: 36rem; color: hsl(var(--muted-foreground)); }
+.stay-button { display: inline-block; margin-top: 24px; padding: 14px 22px; border-radius: 6px; background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); font-weight: 600; }
+.stay-button:hover { background: #385744; }
+.hero-photo img, .detail-photo img { width: 100%; object-fit: cover; background: hsl(var(--muted)); }
+.hero-photo img { aspect-ratio: 5/4; border-radius: 48% 48% 10px 10px / 22% 22% 10px 10px; }
+.hero-photo figcaption, .detail-photo figcaption { margin-top: 7px; color: hsl(var(--muted-foreground)); font-size: .8rem; }
+.home-links { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; padding-block: 26px 64px; border-top: 1px solid hsl(var(--border)); }
+.home-links > div { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: 12px; padding: clamp(20px, 4vw, 38px); }
+.home-links a { display: inline-block; margin-top: 16px; text-decoration: underline; text-underline-offset: 4px; color: hsl(var(--primary)); }
+.home-links h2, .booking-panel h2, .stay-card h2 { font: 400 clamp(1.9rem, 4vw, 3rem)/1.05 "Instrument Serif", Georgia, serif; margin-block: 7px 12px; }
+.page-intro { padding-block: clamp(32px, 7vw, 80px) 32px; }
+.stay-detail { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: clamp(24px, 5vw, 64px); align-items: start; padding-bottom: 64px; }
+.detail-photo img { aspect-ratio: 4/3; border-radius: 12px; }
+.gallery-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 16px; }
+.gallery-options button { border: 2px solid transparent; border-radius: 8px; overflow: hidden; padding: 3px; text-align: left; font-size: .85rem; }
+.gallery-options button[aria-pressed="true"] { border-color: hsl(var(--primary)); }
+.gallery-options img { width: 100%; aspect-ratio: 3/2; object-fit: cover; border-radius: 4px; }
+.gallery-options span { display: block; padding: 6px 4px; }
+.booking-panel { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: 12px; padding: clamp(16px, 3vw, 32px); box-shadow: 0 10px 40px #4c3c2110; scroll-margin-top: 20px; }
+.booking-panel h2 { margin-bottom: 20px; }
+.stay-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; padding-bottom: 64px; }
+.stay-card { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: 12px; overflow: hidden; }
+.stay-card > img { width: 100%; aspect-ratio: 4/3; object-fit: cover; }
+.stay-card-body { padding: 20px; }
+.stay-card h2 { font-size: 2.1rem; }
+.stay-card-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; border-top: 1px solid hsl(var(--border)); margin-top: 16px; padding-top: 16px; }
+.stay-footer { border-top: 1px solid hsl(var(--border)); padding: 24px 0; }
+.stay-footer > div { display: flex; justify-content: space-between; gap: 20px; color: hsl(var(--muted-foreground)); }
+@media (max-width: 850px) {
+  .stay-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stay-detail { grid-template-columns: 1fr; }
 }
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
+@media (max-width: 600px) {
+  .stay-shell { width: calc(100% - 32px); }
+  .header-inner { display: block; padding-block: 18px 8px; }
+  .stay-header nav { margin-top: 12px; gap: 16px; font-size: .875rem; }
+  .home-hero, .home-links, .stay-list { grid-template-columns: 1fr; }
 }

@@ -44,7 +44,7 @@ function IdentityPhoto({ side }: { side: "Recto" | "Verso" }) {
   );
 }
 
-function BookingForm({ property }: { property: Property }) {
+export function BookingForm({ property }: { property: Property }) {
   const [arrival, setArrival] = useState("");
   const [departure, setDeparture] = useState("");
   const [signed, setSigned] = useState(false);

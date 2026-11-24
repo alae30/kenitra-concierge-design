@@ -13,6 +13,15 @@ export default defineConfig(({ mode }) => ({
     },
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  build: {
+    rollupOptions: {
+      input: {
+        accueil: path.resolve(__dirname, "index.html"),
+        logement: path.resolve(__dirname, "logement.html"),
+        conciergerie: path.resolve(__dirname, "conciergerie.html"),
+      },
+    },
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
