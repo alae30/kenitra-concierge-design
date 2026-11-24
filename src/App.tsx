@@ -12,8 +12,6 @@ import evier from "@/assets/stays/evier.jpg";
 import coinCafe from "@/assets/stays/coin-cafe.jpg";
 import cuisine from "@/assets/stays/cuisine.jpg";
 import chambre from "@/assets/stays/chambre.jpg";
-import planDeTravail from "@/assets/stays/cuisine-plan-de-travail.jpg";
-import cuisineEtSalon from "@/assets/stays/cuisine-et-salon.jpg";
 
 const mainStay = { title: "Center Warm Stay", price: 500, weekendPrice: 700, guests: 2 };
 const photos = [
@@ -24,8 +22,6 @@ const photos = [
   { src: coinSalon, label: "Coin salon" },
   { src: evier, label: "Évier de cuisine" },
   { src: coinCafe, label: "Coin café" },
-  { src: planDeTravail, label: "Plan de travail" },
-  { src: cuisineEtSalon, label: "Cuisine et salon" },
 ];
 const pages = [
   { file: "index.html", label: "Accueil" },
