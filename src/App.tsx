@@ -117,6 +117,9 @@ function Concierge() {
   );
 }
 
+const residenceName = "Résidence AL ASSIL COPORATE";
+const residenceMapsUrl = "https://maps.app.goo.gl/YCivSV7GvoSj4DfYA?g_st=aw";
+const residenceMapEmbed = "https://www.google.com/maps?cid=11764988462535068325&output=embed&hl=fr";
 const contactEmail = "contact@centerwarmstay.com";
 const contactPhoneHref = `tel:${houseRulesContact.replace(/ /g, "")}`;
 
@@ -132,8 +135,8 @@ function BrandLink() {
 function StayAddress() {
   return (
     <address className="not-italic">
-      Résidence AsSil<br />
-      Centre-ville, Kénitra
+      {residenceName}<br />
+      7C63+55V · Kénitra 14000, Maroc
     </address>
   );
 }
@@ -163,6 +166,22 @@ function Contact() {
           <StayAddress />
         </section>
       </div>
+      <section className="booking-panel stay-location" aria-labelledby="stay-location-title">
+        <div className="stay-location-heading">
+          <h2 id="stay-location-title">Localisation</h2>
+          <a className="stay-contact-link" href={residenceMapsUrl} target="_blank" rel="noopener noreferrer">
+            Ouvrir dans Google Maps
+          </a>
+        </div>
+        <iframe
+          className="stay-location-map"
+          title={`Carte Google Maps de la ${residenceName}`}
+          src={residenceMapEmbed}
+          loading="lazy"
+          referrerPolicy="strict-origin-when-cross-origin"
+          allowFullScreen
+        />
+      </section>
     </>
   );
 }
