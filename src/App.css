@@ -69,16 +69,18 @@ body {
   object-position: 50% 64%;
   border-radius: 48% 48% 18px 18px / 30% 30% 18px 18px;
 }
+.photo-frame {
+  padding: 6px;
+  background: hsl(var(--card));
+  border-radius: 16px;
+  box-shadow: 0 12px 30px #5b34294a;
+}
 .hero-photo .hero-detail {
   position: absolute;
   left: -30px;
   bottom: 59px;
   width: min(33%, 155px);
   aspect-ratio: 1;
-  padding: 6px;
-  background: hsl(var(--card));
-  border-radius: 16px;
-  box-shadow: 0 12px 30px #5b34294a;
   transform: rotate(-8deg);
 }
 .hero-photo figcaption, .detail-photo figcaption { margin-top: 7px; color: hsl(var(--muted-foreground)); font-size: .8rem; }
@@ -90,13 +92,13 @@ body {
 .page-intro { padding-block: clamp(32px, 7vw, 80px) 32px; }
 .page-intro .intro { padding-left: 18px; border-left: 2px solid #b87861; }
 .stay-detail { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: clamp(24px, 5vw, 64px); align-items: start; padding-bottom: 64px; }
-.detail-photo { padding: 10px; border-radius: 22px; background: #ebd2c2; }
-.detail-photo img { aspect-ratio: 4/3; object-fit: contain; border-radius: 15px; }
+.detail-photo { padding: 10px; }
+.detail-photo img { aspect-ratio: 4/3; object-fit: contain; border-radius: 10px; }
 .detail-photo figcaption { padding: 3px 6px; }
-.gallery-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 16px; }
-.gallery-options button { border: 2px solid transparent; border-radius: 8px; overflow: hidden; padding: 3px; text-align: left; font-size: .85rem; }
+.gallery-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(8px, 2vw, 16px); margin-top: 20px; }
+.gallery-options button { border: 1px solid transparent; overflow: hidden; display: flex; flex-direction: column; text-align: left; font-size: .875rem; box-shadow: 0 5px 13px #5b34292c; }
 .gallery-options button[aria-pressed="true"] { border-color: hsl(var(--primary)); }
-.gallery-options img { width: 100%; aspect-ratio: 3/2; object-fit: cover; border-radius: 4px; }
+.gallery-options img { width: 100%; aspect-ratio: 3/2; object-fit: cover; height: auto; border-radius: 10px; }
 .gallery-options span { display: block; padding: 6px 4px; }
 .booking-panel { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-top: 4px solid #b87861; border-radius: 20px; padding: clamp(16px, 3vw, 32px); box-shadow: 0 12px 35px #5b342919; scroll-margin-top: 20px; }
 .booking-panel input:not([type="checkbox"]) { background: #fffbf6; }

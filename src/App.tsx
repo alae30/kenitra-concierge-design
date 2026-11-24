@@ -5,27 +5,36 @@ import { houseRules, houseRulesContact } from "@/lib/house-rules";
 import { BookingForm } from "@/components/BookingDialog";
 import PropertiesSection from "@/components/PropertiesSection";
 import brandMark from "@/assets/center-warm-stay.svg";
-import studio from "@/assets/stays/studio.jpg";
-import salleEau from "@/assets/stays/salle-eau.jpg";
-import coinSalon from "@/assets/stays/coin-salon.jpg";
-import evier from "@/assets/stays/evier.jpg";
-import coinCafe from "@/assets/stays/coin-cafe.jpg";
-import cuisine from "@/assets/stays/cuisine.jpg";
-import cuisineSuspensions from "@/assets/stays/cuisine-suspensions.jpg";
-import coinTele from "@/assets/stays/coin-tele.jpg";
-import chambre from "@/assets/stays/chambre.jpg";
+import studio from "@/assets/stays/studio.webp";
+import studioThumb from "@/assets/stays/studio-mini.webp";
+import salleEau from "@/assets/stays/salle-eau.webp";
+import salleEauThumb from "@/assets/stays/salle-eau-mini.webp";
+import coinSalon from "@/assets/stays/coin-salon.webp";
+import coinSalonThumb from "@/assets/stays/coin-salon-mini.webp";
+import evier from "@/assets/stays/evier.webp";
+import evierThumb from "@/assets/stays/evier-mini.webp";
+import coinCafe from "@/assets/stays/coin-cafe.webp";
+import coinCafeThumb from "@/assets/stays/coin-cafe-mini.webp";
+import cuisine from "@/assets/stays/cuisine.webp";
+import cuisineThumb from "@/assets/stays/cuisine-mini.webp";
+import cuisineSuspensions from "@/assets/stays/cuisine-suspensions.webp";
+import cuisineSuspensionsThumb from "@/assets/stays/cuisine-suspensions-mini.webp";
+import coinTele from "@/assets/stays/coin-tele.webp";
+import coinTeleThumb from "@/assets/stays/coin-tele-mini.webp";
+import chambre from "@/assets/stays/chambre.webp";
+import chambreThumb from "@/assets/stays/chambre-mini.webp";
 
 const mainStay = { title: "Center Warm Stay", price: 500, weekendPrice: 700, guests: 2 };
 const photos = [
-  { src: studio, label: "Vue du studio" },
-  { src: cuisine, label: "Cuisine" },
-  { src: chambre, label: "Coin nuit" },
-  { src: salleEau, label: "Salle d’eau" },
-  { src: coinSalon, label: "Coin salon" },
-  { src: evier, label: "Évier de cuisine" },
-  { src: coinCafe, label: "Coin café" },
-  { src: cuisineSuspensions, label: "Vue d’ensemble de la cuisine" },
-  { src: coinTele, label: "Coin télé" },
+  { src: studio, thumb: studioThumb, label: "Vue du studio" },
+  { src: cuisine, thumb: cuisineThumb, label: "Cuisine" },
+  { src: chambre, thumb: chambreThumb, label: "Coin nuit" },
+  { src: salleEau, thumb: salleEauThumb, label: "Salle d’eau" },
+  { src: coinSalon, thumb: coinSalonThumb, label: "Coin salon" },
+  { src: evier, thumb: evierThumb, label: "Évier de cuisine" },
+  { src: coinCafe, thumb: coinCafeThumb, label: "Coin café" },
+  { src: cuisineSuspensions, thumb: cuisineSuspensionsThumb, label: "Vue d’ensemble de la cuisine" },
+  { src: coinTele, thumb: coinTeleThumb, label: "Coin télé" },
 ];
 const pages = [
   { file: "index.html", label: "Accueil" },
@@ -45,8 +54,8 @@ function Home() {
           <a className="stay-button" href="./logement.html">Découvrir le logement</a>
         </div>
         <figure className="hero-photo">
-          <img src={studio} alt="Vue du studio Center Warm Stay depuis la cuisine" />
-          <img className="hero-detail" src={coinCafe} alt="" />
+          <img src={studio} fetchPriority="high" decoding="async" alt="Vue du studio Center Warm Stay depuis la cuisine" />
+          <img className="hero-detail photo-frame" src={coinCafeThumb} decoding="async" alt="" />
           <figcaption>Center Warm Stay, Kénitra</figcaption>
         </figure>
       </section>
@@ -80,15 +89,15 @@ function MainStay() {
       </section>
       <div className="stay-detail">
         <div>
-          <figure className="detail-photo">
-            <img key={photos[selected].src} src={photos[selected].src} alt={photos[selected].label} />
+          <figure className="detail-photo photo-frame">
+            <img key={photos[selected].src} src={photos[selected].src} decoding="async" alt={photos[selected].label} />
             <figcaption>{photos[selected].label}</figcaption>
           </figure>
           <div className="gallery-options" role="group" aria-label="Galerie de photos">
             {photos.map((photo, index) => (
-              <button key={photo.label} type="button" aria-label={`Afficher ${photo.label.toLocaleLowerCase("fr")}`}
+              <button className="photo-frame" key={photo.label} type="button" aria-label={`Afficher ${photo.label.toLocaleLowerCase("fr")}`}
                 aria-pressed={index === selected} onClick={() => setSelected(index)}>
-                <img loading="lazy" src={photo.src} alt="" />
+                <img loading="lazy" decoding="async" width={396} height={264} src={photo.thumb} alt="" />
                 <span>{photo.label}</span>
               </button>
             ))}
