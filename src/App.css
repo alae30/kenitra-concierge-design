@@ -45,7 +45,7 @@ body { background: hsl(var(--background)); color: hsl(var(--foreground)); font-f
 .home-links h2, .booking-panel h2, .stay-card h2 { font: 400 clamp(1.9rem, 4vw, 3rem)/1.05 "Instrument Serif", Georgia, serif; margin-block: 7px 12px; }
 .page-intro { padding-block: clamp(32px, 7vw, 80px) 32px; }
 .stay-detail { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: clamp(24px, 5vw, 64px); align-items: start; padding-bottom: 64px; }
-.detail-photo img { aspect-ratio: 4/3; border-radius: 12px; }
+.detail-photo img { aspect-ratio: 4/3; object-fit: contain; border-radius: 12px; }
 .gallery-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 16px; }
 .gallery-options button { border: 2px solid transparent; border-radius: 8px; overflow: hidden; padding: 3px; text-align: left; font-size: .85rem; }
 .gallery-options button[aria-pressed="true"] { border-color: hsl(var(--primary)); }

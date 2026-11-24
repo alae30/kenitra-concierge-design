@@ -2,15 +2,23 @@ import { useState } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { BookingForm } from "@/components/BookingDialog";
 import PropertiesSection from "@/components/PropertiesSection";
-import salon from "@/assets/stays/salon.jpg";
+import studio from "@/assets/stays/studio.jpg";
+import salleEau from "@/assets/stays/salle-eau.jpg";
+import coinSalon from "@/assets/stays/coin-salon.jpg";
+import evier from "@/assets/stays/evier.jpg";
+import coinCafe from "@/assets/stays/coin-cafe.jpg";
 import cuisine from "@/assets/stays/cuisine.jpg";
 import chambre from "@/assets/stays/chambre.jpg";
 
 const mainStay = { title: "Center Warm Stay", price: 500, weekendPrice: 700, guests: 2 };
 const photos = [
-  { src: salon, label: "Espace de vie" },
+  { src: studio, label: "Vue du studio" },
   { src: cuisine, label: "Cuisine" },
   { src: chambre, label: "Coin nuit" },
+  { src: salleEau, label: "Salle d’eau" },
+  { src: coinSalon, label: "Coin salon" },
+  { src: evier, label: "Évier de cuisine" },
+  { src: coinCafe, label: "Coin café" },
 ];
 const pages = [
   { file: "index.html", label: "Accueil" },
@@ -29,8 +37,8 @@ function Home() {
           <a className="stay-button" href="./logement.html">Découvrir le logement</a>
         </div>
         <figure className="hero-photo">
-          <img src={salon} alt="Salon aux tons naturels, photo d’illustration" />
-          <figcaption>Photo d’illustration</figcaption>
+          <img src={studio} alt="Vue du studio Center Warm Stay depuis la cuisine" />
+          <figcaption>Center Warm Stay, Kénitra</figcaption>
         </figure>
       </section>
       <section className="home-links">
@@ -64,14 +72,14 @@ function MainStay() {
       <div className="stay-detail">
         <div>
           <figure className="detail-photo">
-            <img src={photos[selected].src} alt={`${photos[selected].label}, photo d’illustration`} />
-            <figcaption>{photos[selected].label} · Photo d’illustration</figcaption>
+            <img src={photos[selected].src} alt={photos[selected].label} />
+            <figcaption>{photos[selected].label}</figcaption>
           </figure>
           <div className="gallery-options" role="group" aria-label="Galerie de photos">
             {photos.map((photo, index) => (
               <button key={photo.label} type="button" aria-label={`Afficher ${photo.label.toLocaleLowerCase("fr")}`}
                 aria-pressed={index === selected} onClick={() => setSelected(index)}>
-                <img src={photo.src} alt="" />
+                <img loading="lazy" src={photo.src} alt="" />
                 <span>{photo.label}</span>
               </button>
             ))}
