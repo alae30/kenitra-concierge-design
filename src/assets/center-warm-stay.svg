@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="388 99 249 221" fill="none">
+  <defs>
+    <linearGradient id="house" x1="438" y1="230" x2="585" y2="260" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#a75c40"/>
+      <stop offset="1" stop-color="#715032"/>
+    </linearGradient>
+  </defs>
+  <g stroke="#bf9651" stroke-width="5.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M437 218a75 75 0 0 1 150 0"/>
+    <path d="M393 218h28m-11-26 16 5m-15-35 24 14m2-29 14 14m3-41 14 26m16-26 5 17m23-32v29m28-14-5 17m35-17-14 26m31 1-14 14m42 1-24 14m25 16-16 5m30 21h-28"/>
+  </g>
+  <path d="M533 198l-11-7a19 19 0 0 0-20 0l-20 14v-13h-19v29l-15 12a19 19 0 0 0-7 15v46a19 19 0 0 0 19 19h26a12 12 0 0 0 12-12v-26a14 14 0 0 1 28 0v38h43M441 278a18 18 0 0 0 36 0v-16a20 20 0 0 1 8-15l42-34a17 17 0 0 1 20-1l28 19a18 18 0 0 1 8 15" stroke="url(#house)" stroke-width="5.8" stroke-linecap="round" stroke-linejoin="round"/>
+  <g stroke="#785638" stroke-width="5.8" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="583" cy="257" r="12" fill="#785638"/>
+    <circle cx="583" cy="255" r="3.9" fill="#fff7ed" stroke="none"/>
+    <path d="M583 269v44m0-18h10m-10 9h8"/>
+  </g>
+</svg>

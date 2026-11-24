@@ -3,6 +3,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { houseRules, houseRulesContact } from "@/lib/house-rules";
 import { BookingForm } from "@/components/BookingDialog";
 import PropertiesSection from "@/components/PropertiesSection";
+import brandMark from "@/assets/center-warm-stay.svg";
 import studio from "@/assets/stays/studio.jpg";
 import salleEau from "@/assets/stays/salle-eau.jpg";
 import coinSalon from "@/assets/stays/coin-salon.jpg";
@@ -145,7 +146,10 @@ export default function App() {
     <TooltipProvider>
       <header className="stay-header">
         <div className="stay-shell header-inner">
-          <a className="stay-brand" href="./index.html">Center Warm Stay <small>Kénitra · Maroc</small></a>
+          <a className="stay-brand" href="./index.html" aria-label="Center Warm Stay — Accueil">
+            <img src={brandMark} alt="" width={58} height={52} />
+            <span className="stay-wordmark"><span>Center</span><small>Warm Stay</small></span>
+          </a>
           <nav aria-label="Navigation principale">
             {pages.map(({ file, label }) => (
               <a key={file} href={`./${file}`} aria-current={file === page?.file ? "page" : undefined}>{label}</a>
