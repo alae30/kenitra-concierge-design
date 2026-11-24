@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Mail, MapPin, Phone } from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { houseRules, houseRulesContact } from "@/lib/house-rules";
 import { BookingForm } from "@/components/BookingDialog";
@@ -116,19 +117,52 @@ function Concierge() {
   );
 }
 
+const contactEmail = "contact@centerwarmstay.com";
+const contactPhoneHref = `tel:${houseRulesContact.replace(/ /g, "")}`;
+
+function BrandLink() {
+  return (
+    <a className="stay-brand" href="./index.html" aria-label="Center Warm Stay — Accueil">
+      <img src={brandMark} alt="" width={58} height={52} />
+      <span className="stay-wordmark"><span>Center</span><small>Warm Stay</small></span>
+    </a>
+  );
+}
+
+function StayAddress() {
+  return (
+    <address className="not-italic">
+      Résidence AsSil<br />
+      Centre-ville, Kénitra
+    </address>
+  );
+}
+
 function Contact() {
   return (
     <>
       <section className="page-intro">
         <p className="eyebrow">Center Warm Stay · Kénitra</p>
         <h1>Contact</h1>
-        <p className="intro">Une question sur le studio, votre séjour ou la conciergerie ? Contactez-nous à ce numéro.</p>
+        <p className="intro">Une question sur le studio, votre séjour ou la conciergerie ? Écrivez-nous ou appelez-nous.</p>
       </section>
-      <section className="booking-panel mb-12 max-w-lg" aria-labelledby="contact-phone">
-        <h2 id="contact-phone">Téléphone</h2>
-        <p><a className="text-lg underline underline-offset-4" href={`tel:${houseRulesContact.replace(/ /g, "")}`}>{houseRulesContact}</a></p>
-        <a className="stay-button" href={`tel:${houseRulesContact.replace(/ /g, "")}`}>Appeler Center Warm Stay</a>
-      </section>
+      <div className="stay-contact-grid">
+        <section className="booking-panel stay-contact-card">
+          <Mail aria-hidden="true" />
+          <h2>E-mail</h2>
+          <a className="stay-contact-link" href={`mailto:${contactEmail}`}>{contactEmail}</a>
+        </section>
+        <section className="booking-panel stay-contact-card">
+          <Phone aria-hidden="true" />
+          <h2>Téléphone</h2>
+          <a className="stay-contact-link" href={contactPhoneHref}>{houseRulesContact}</a>
+        </section>
+        <section className="booking-panel stay-contact-card">
+          <MapPin aria-hidden="true" />
+          <h2>Adresse</h2>
+          <StayAddress />
+        </section>
+      </div>
     </>
   );
 }
@@ -149,7 +183,7 @@ function HouseRules() {
             </li>
           ))}
         </ol>
-        <p className="mt-6">Pour un besoin spécifique, contacte le <a className="underline" href="tel:+212629275382">{houseRulesContact}</a>.</p>
+        <p className="mt-6">Pour un besoin spécifique, contacte le <a className="underline" href={contactPhoneHref}>{houseRulesContact}</a>.</p>
       </section>
     </>
   );
@@ -164,10 +198,7 @@ export default function App() {
     <TooltipProvider>
       <header className="stay-header">
         <div className="stay-shell header-inner">
-          <a className="stay-brand" href="./index.html" aria-label="Center Warm Stay — Accueil">
-            <img src={brandMark} alt="" width={58} height={52} />
-            <span className="stay-wordmark"><span>Center</span><small>Warm Stay</small></span>
-          </a>
+          <BrandLink />
           <nav aria-label="Navigation principale">
             {pages.map(({ file, label }) => (
               <a key={file} href={`./${file}`} aria-current={file === page?.file ? "page" : undefined}>{label}</a>
@@ -179,7 +210,10 @@ export default function App() {
         {rulesPage ? <HouseRules /> : page?.file === "logement.html" ? <MainStay /> : page?.file === "conciergerie.html" ? <Concierge /> : page?.file === "contact.html" ? <Contact /> : <Home />}
       </main>
       <footer className="stay-footer">
-        <div className="stay-shell"><span>Center Warm Stay</span><span>Kénitra, Maroc</span></div>
+        <div className="stay-shell">
+          <BrandLink />
+          <StayAddress />
+        </div>
       </footer>
     </TooltipProvider>
   );

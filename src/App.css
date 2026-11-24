@@ -109,7 +109,12 @@ body {
 .stay-card h2 { font-size: 2.1rem; }
 .stay-card-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; border-top: 1px solid hsl(var(--border)); margin-top: 16px; padding-top: 16px; }
 .stay-footer { border-top: 1px solid hsl(var(--border)); padding: 24px 0; background: #eddbcd; }
-.stay-footer > div { display: flex; justify-content: space-between; gap: 20px; color: hsl(var(--muted-foreground)); }
+.stay-footer > div { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; color: hsl(var(--muted-foreground)); }
+.stay-footer address { margin-inline-start: auto; text-align: right; }
+.stay-contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr)); gap: 20px; padding-bottom: 64px; }
+.stay-contact-card > svg { width: 42px; height: 42px; padding: 9px; border-radius: 50%; background: hsl(var(--secondary)); color: hsl(var(--primary)); }
+.stay-contact-card h2 { margin-block: 13px 9px; font-size: 1.75rem; }
+.stay-contact-link { color: hsl(var(--primary)); text-decoration: underline; text-underline-offset: 4px; overflow-wrap: anywhere; }
 @media (max-width: 850px) {
   .stay-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .stay-detail { grid-template-columns: 1fr; }
