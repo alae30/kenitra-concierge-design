@@ -30,6 +30,7 @@ const pages = [
   { file: "index.html", label: "Accueil" },
   { file: "logement.html", label: "Logement principal" },
   { file: "conciergerie.html", label: "Conciergerie" },
+  { file: "contact.html", label: "Contact" },
 ];
 
 function Home() {
@@ -115,6 +116,23 @@ function Concierge() {
   );
 }
 
+function Contact() {
+  return (
+    <>
+      <section className="page-intro">
+        <p className="eyebrow">Center Warm Stay · Kénitra</p>
+        <h1>Contact</h1>
+        <p className="intro">Une question sur le studio, votre séjour ou la conciergerie ? Contactez-nous à ce numéro.</p>
+      </section>
+      <section className="booking-panel mb-12 max-w-lg" aria-labelledby="contact-phone">
+        <h2 id="contact-phone">Téléphone</h2>
+        <p><a className="text-lg underline underline-offset-4" href={`tel:${houseRulesContact.replace(/ /g, "")}`}>{houseRulesContact}</a></p>
+        <a className="stay-button" href={`tel:${houseRulesContact.replace(/ /g, "")}`}>Appeler Center Warm Stay</a>
+      </section>
+    </>
+  );
+}
+
 function HouseRules() {
   return (
     <>
@@ -158,7 +176,7 @@ export default function App() {
         </div>
       </header>
       <main className="stay-shell">
-        {rulesPage ? <HouseRules /> : page?.file === "logement.html" ? <MainStay /> : page?.file === "conciergerie.html" ? <Concierge /> : <Home />}
+        {rulesPage ? <HouseRules /> : page?.file === "logement.html" ? <MainStay /> : page?.file === "conciergerie.html" ? <Concierge /> : page?.file === "contact.html" ? <Contact /> : <Home />}
       </main>
       <footer className="stay-footer">
         <div className="stay-shell"><span>Center Warm Stay</span><span>Kénitra, Maroc</span></div>
