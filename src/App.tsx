@@ -38,6 +38,7 @@ function Home() {
         </div>
         <figure className="hero-photo">
           <img src={studio} alt="Vue du studio Center Warm Stay depuis la cuisine" />
+          <img className="hero-detail" src={coinCafe} alt="" />
           <figcaption>Center Warm Stay, Kénitra</figcaption>
         </figure>
       </section>
@@ -72,7 +73,7 @@ function MainStay() {
       <div className="stay-detail">
         <div>
           <figure className="detail-photo">
-            <img src={photos[selected].src} alt={photos[selected].label} />
+            <img key={photos[selected].src} src={photos[selected].src} alt={photos[selected].label} />
             <figcaption>{photos[selected].label}</figcaption>
           </figure>
           <div className="gallery-options" role="group" aria-label="Galerie de photos">
