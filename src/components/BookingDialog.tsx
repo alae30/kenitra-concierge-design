@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
+import { saveDemoBooking } from "@/lib/demo-bookings";
 import { demoTerms } from "@/lib/house-rules";
 const dayMilliseconds = 86_400_000;
 const money = new Intl.NumberFormat("fr-MA", { style: "currency", currency: "MAD" });
@@ -129,8 +130,26 @@ export function BookingForm({ property }: { property: Property }) {
         verso: backImage,
         signature,
       });
+      const booking = {
+        id: crypto.randomUUID(),
+        property: property.title,
+        guest: String(data.get("name")),
+        email: String(data.get("email")),
+        arrival,
+        departure,
+        guests: Number(data.get("guests")),
+        amount,
+        status: "pending" as const,
+        createdAt: new Date().toISOString(),
+        contract: pdf.output("blob"),
+      };
       pdf.save("contrat-sejour-demonstration.pdf");
-      setStatus("Le contrat PDF a été téléchargé sur cet appareil.");
+      try {
+        await saveDemoBooking(booking);
+        setStatus("Le contrat a été téléchargé et la demande figure dans le tableau de bord de ce navigateur.");
+      } catch {
+        setStatus("Le contrat a été téléchargé. Le navigateur n’a pas pu enregistrer la demande dans le tableau de bord.");
+      }
     } catch {
       setStatus("Le contrat n’a pas pu être généré. Vérifie que les deux images s’ouvrent et réessaie.");
     } finally {

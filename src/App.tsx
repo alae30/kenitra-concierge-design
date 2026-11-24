@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { lazy, Suspense, useRef, useState } from "react";
 import { Mail, MapPin, Menu, Phone, X } from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { houseRules, houseRulesContact } from "@/lib/house-rules";
@@ -23,6 +23,8 @@ import coinTele from "@/assets/stays/coin-tele.webp";
 import coinTeleThumb from "@/assets/stays/coin-tele-mini.webp";
 import chambre from "@/assets/stays/chambre.webp";
 import chambreThumb from "@/assets/stays/chambre-mini.webp";
+
+const BookingDashboard = lazy(() => import("@/components/BookingDashboard"));
 
 const mainStay = { title: "Center Warm Stay", price: 500, weekendPrice: 700, guests: 2 };
 const photos = [
@@ -222,7 +224,8 @@ export default function App() {
   const menuButton = useRef<HTMLButtonElement>(null);
   const filename = window.location.pathname.split("/").pop();
   const rulesPage = filename === "reglement.html";
-  const page = pages.find(({ file }) => file === filename) ?? (rulesPage ? undefined : pages[0]);
+  const dashboardPage = filename === "gestion.html";
+  const page = pages.find(({ file }) => file === filename) ?? (rulesPage || dashboardPage ? undefined : pages[0]);
 
   return (
     <TooltipProvider>
@@ -253,7 +256,7 @@ export default function App() {
         </div>
       </header>
       <main className="stay-shell">
-        {rulesPage ? <HouseRules /> : page?.file === "logement.html" ? <MainStay /> : page?.file === "conciergerie.html" ? <Concierge /> : page?.file === "contact.html" ? <Contact /> : <Home />}
+        {dashboardPage ? <Suspense fallback={<p>Chargement du tableau de bord…</p>}><BookingDashboard /></Suspense> : rulesPage ? <HouseRules /> : page?.file === "logement.html" ? <MainStay /> : page?.file === "conciergerie.html" ? <Concierge /> : page?.file === "contact.html" ? <Contact /> : <Home />}
       </main>
       <footer className="stay-footer">
         <div className="stay-shell">
