@@ -19,6 +19,7 @@ export default defineConfig(({ mode }) => ({
         accueil: path.resolve(__dirname, "index.html"),
         logement: path.resolve(__dirname, "logement.html"),
         conciergerie: path.resolve(__dirname, "conciergerie.html"),
+        reglement: path.resolve(__dirname, "reglement.html"),
       },
     },
   },

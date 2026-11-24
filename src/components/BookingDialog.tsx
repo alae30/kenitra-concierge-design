@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-const demoTerms = "Simulation de réservation. Les dates et les tarifs sont indicatifs. Aucun séjour, paiement ou contrat réel ne résulte de cette simulation.";
+import { demoTerms } from "@/lib/house-rules";
 const dayMilliseconds = 86_400_000;
 const money = new Intl.NumberFormat("fr-MA", { style: "currency", currency: "MAD" });
 
@@ -27,7 +27,7 @@ function IdentityPhoto({ side }: { side: "Recto" | "Verso" }) {
   return (
     <label className="grid gap-2 text-sm">
       {side}
-      <Input type="file" required accept="image/jpeg,image/png" capture="environment" onChange={(event) => {
+      <Input name={side.toLowerCase()} type="file" required accept="image/jpeg,image/png" capture="environment" onChange={(event) => {
         const image = event.target.files?.[0];
         if (image && (!["image/jpeg", "image/png"].includes(image.type) || image.size > 5 * 1024 * 1024)) {
           event.target.value = "";
@@ -103,31 +103,36 @@ export function BookingForm({ property }: { property: Property }) {
       return;
     }
     const data = new FormData(event.currentTarget);
+    const recto = data.get("recto");
+    const verso = data.get("verso");
+    if (!(recto instanceof File) || !(verso instanceof File) || !recto.size || !verso.size) {
+      setStatus("Ajoute une image pour le recto et une autre pour le verso.");
+      return;
+    }
     const signature = canvas.current.toDataURL("image/png");
     setGenerating(true);
     setStatus("");
     try {
-      const { jsPDF } = await import("jspdf");
-      const pdf = new jsPDF();
-      pdf.setFontSize(20);
-      pdf.text("Réservation · DÉMONSTRATION", 18, 24);
-      pdf.setFontSize(12);
-      const details = [
-        property.title,
-        `Dates : du ${arrival} au ${departure}`,
-        `Voyageurs : ${data.get("guests")}`,
-        `Montant indicatif : ${total.replace(/\s/g, " ")}`,
-        `Nom : ${data.get("name")}`,
-        `E-mail : ${data.get("email")}`,
-        `Signé le : ${new Date().toLocaleString("fr-MA", { timeZone: "Africa/Casablanca" })}`,
-      ];
-      pdf.text(pdf.splitTextToSize(details.join("\n"), 174), 18, 39);
-      pdf.text(pdf.splitTextToSize(demoTerms, 174), 18, 115);
-      pdf.addImage(signature, "PNG", 18, 145, 128, 40);
-      pdf.save("reservation-demonstration.pdf");
-      setStatus("Le PDF de démonstration a été généré sur cet appareil.");
+      const { createBookingContract, readContractPhoto } = await import("@/lib/booking-contract");
+      const [frontImage, backImage] = await Promise.all([readContractPhoto(recto), readContractPhoto(verso)]);
+      const pdf = createBookingContract({
+        details: [
+          property.title,
+          `Dates : du ${arrival} au ${departure}`,
+          `Voyageurs : ${data.get("guests")}`,
+          `Montant indicatif : ${total.replace(/\s/g, " ")}`,
+          `Nom : ${data.get("name")}`,
+          `E-mail : ${data.get("email")}`,
+        ],
+        signedAt: new Date().toLocaleString("fr-MA", { timeZone: "Africa/Casablanca" }).replace(/\s/g, " "),
+        recto: frontImage,
+        verso: backImage,
+        signature,
+      });
+      pdf.save("contrat-sejour-demonstration.pdf");
+      setStatus("Le contrat PDF a été téléchargé sur cet appareil.");
     } catch {
-      setStatus("Le PDF n’a pas pu être généré. Tu peux réessayer.");
+      setStatus("Le contrat n’a pas pu être généré. Vérifie que les deux images s’ouvrent et réessaie.");
     } finally {
       setGenerating(false);
     }
@@ -154,7 +159,7 @@ export function BookingForm({ property }: { property: Property }) {
       </div>
       <fieldset className="grid gap-2 rounded-lg border p-3">
         <legend className="px-1 text-sm font-semibold">Carte d’identité marocaine</legend>
-        <p className="text-sm text-muted-foreground">Utilise deux images fictives. Les aperçus restent sur cet appareil.</p>
+        <p className="text-sm text-muted-foreground">Utilise deux images fictives. Elles seront intégrées au contrat PDF téléchargé sur cet appareil.</p>
         <div className="grid gap-3 sm:grid-cols-2">
           <IdentityPhoto side="Recto" />
           <IdentityPhoto side="Verso" />
@@ -163,7 +168,14 @@ export function BookingForm({ property }: { property: Property }) {
       <fieldset className="grid gap-3 rounded-lg border p-3">
         <legend className="px-1 text-sm font-semibold">Conditions et signature</legend>
         <p className="text-sm text-muted-foreground">{demoTerms}</p>
-        <label className="flex items-start gap-2 text-sm"><input className="mt-1" type="checkbox" required />J’accepte les conditions de cette démonstration.</label>
+        <div className="grid gap-2">
+          <a href="./reglement.html" target="_blank" rel="noopener" className="text-sm font-semibold text-primary underline underline-offset-4">
+            Lire le règlement du logement (nouvel onglet)
+          </a>
+          <label className="flex items-start gap-2 text-sm">
+            <input className="mt-1" type="checkbox" required />J’accepte le règlement du logement.
+          </label>
+        </div>
         <p id="signature-instructions" className="text-sm">Signe avec ton doigt, un stylet ou la souris.</p>
         <canvas ref={canvas} width={640} height={200} aria-label="Zone de signature" aria-describedby="signature-instructions"
           className="w-full touch-none rounded-md border bg-white"
@@ -176,7 +188,7 @@ export function BookingForm({ property }: { property: Property }) {
           setSigned(false);
         }}>Effacer la signature</Button>
       </fieldset>
-      <Button disabled={generating} type="submit">{generating ? "Génération du PDF…" : "Télécharger le PDF de démonstration"}</Button>
+      <Button disabled={generating} type="submit">{generating ? "Génération du PDF…" : "Télécharger le contrat PDF"}</Button>
       {status && <p role="status" className="text-sm">{status}</p>}
     </form>
   );

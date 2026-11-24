@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { houseRules, houseRulesContact } from "@/lib/house-rules";
 import { BookingForm } from "@/components/BookingDialog";
 import PropertiesSection from "@/components/PropertiesSection";
 import studio from "@/assets/stays/studio.jpg";
@@ -113,9 +114,32 @@ function Concierge() {
   );
 }
 
+function HouseRules() {
+  return (
+    <>
+      <section className="page-intro">
+        <p className="eyebrow">Center Warm Stay · Kénitra</p>
+        <h1>Règlement du logement</h1>
+      </section>
+      <section className="booking-panel mb-12 max-w-3xl" aria-label="Conditions générales du séjour">
+        <ol className="list-decimal space-y-5 pl-6">
+          {houseRules.map((rule) => (
+            <li key={rule.title}>
+              <h2 className="!mb-1 !text-xl">{rule.title}</h2>
+              <p>{rule.text}</p>
+            </li>
+          ))}
+        </ol>
+        <p className="mt-6">Pour un besoin spécifique, contacte le <a className="underline" href="tel:+212629275382">{houseRulesContact}</a>.</p>
+      </section>
+    </>
+  );
+}
+
 export default function App() {
   const filename = window.location.pathname.split("/").pop();
-  const page = pages.find(({ file }) => file === filename) ?? pages[0];
+  const rulesPage = filename === "reglement.html";
+  const page = pages.find(({ file }) => file === filename) ?? (rulesPage ? undefined : pages[0]);
 
   return (
     <TooltipProvider>
@@ -124,13 +148,13 @@ export default function App() {
           <a className="stay-brand" href="./index.html">Center Warm Stay <small>Kénitra · Maroc</small></a>
           <nav aria-label="Navigation principale">
             {pages.map(({ file, label }) => (
-              <a key={file} href={`./${file}`} aria-current={file === page.file ? "page" : undefined}>{label}</a>
+              <a key={file} href={`./${file}`} aria-current={file === page?.file ? "page" : undefined}>{label}</a>
             ))}
           </nav>
         </div>
       </header>
       <main className="stay-shell">
-        {page.file === "logement.html" ? <MainStay /> : page.file === "conciergerie.html" ? <Concierge /> : <Home />}
+        {rulesPage ? <HouseRules /> : page?.file === "logement.html" ? <MainStay /> : page?.file === "conciergerie.html" ? <Concierge /> : <Home />}
       </main>
       <footer className="stay-footer">
         <div className="stay-shell"><span>Center Warm Stay</span><span>Kénitra, Maroc</span></div>
