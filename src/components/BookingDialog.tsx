@@ -139,13 +139,13 @@ export function BookingForm({ property }: { property: Property }) {
   }
 
   return (
-    <form className="grid gap-5" onSubmit={download}>
+    <form className="booking-form grid min-w-0 gap-5" onSubmit={download}>
       {property.weekendPrice !== undefined && (
         <p className="text-sm text-muted-foreground">
           {property.price} MAD par nuit du lundi au vendredi · {property.weekendPrice} MAD le samedi et le dimanche
         </p>
       )}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid gap-3 min-[480px]:grid-cols-2">
         <label className="grid gap-2 text-sm">Arrivée<Input type="date" required min={today} value={arrival} onChange={(event) => setArrival(event.target.value)} /></label>
         <label className="grid gap-2 text-sm">Départ<Input type="date" required min={arrival || today} value={departure} onChange={(event) => setDeparture(event.target.value)} /></label>
       </div>
@@ -157,7 +157,7 @@ export function BookingForm({ property }: { property: Property }) {
         <label className="grid gap-2 text-sm">Nom fictif<Input name="name" required maxLength={100} placeholder="Camille Exemple" /></label>
         <label className="grid gap-2 text-sm">E-mail fictif<Input name="email" type="email" required maxLength={254} placeholder="camille@example.com" /></label>
       </div>
-      <fieldset className="grid gap-2 rounded-lg border p-3">
+      <fieldset className="grid min-w-0 gap-2 rounded-lg border p-3">
         <legend className="px-1 text-sm font-semibold">Carte d’identité marocaine</legend>
         <p className="text-sm text-muted-foreground">Utilise deux images fictives. Elles seront intégrées au contrat PDF téléchargé sur cet appareil.</p>
         <div className="grid gap-3 sm:grid-cols-2">
@@ -165,7 +165,7 @@ export function BookingForm({ property }: { property: Property }) {
           <IdentityPhoto side="Verso" />
         </div>
       </fieldset>
-      <fieldset className="grid gap-3 rounded-lg border p-3">
+      <fieldset className="grid min-w-0 gap-3 rounded-lg border p-3">
         <legend className="px-1 text-sm font-semibold">Conditions et signature</legend>
         <p className="text-sm text-muted-foreground">{demoTerms}</p>
         <div className="grid gap-2">
@@ -200,7 +200,7 @@ export default function BookingDialog({ property }: { property: Property }) {
       <DialogTrigger asChild>
         <Button variant="secondary" size="sm">Essayer la réservation</Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-2xl">
+      <DialogContent className="max-h-[90dvh] w-[calc(100%-2rem)] overflow-y-auto rounded-xl p-4 sm:max-w-2xl sm:p-6">
         <DialogHeader>
           <DialogTitle>{property.title}</DialogTitle>
           <DialogDescription>Démo de réservation avec un logement et des tarifs d’exemple.</DialogDescription>

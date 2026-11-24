@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { useRef, useState } from "react";
+import { Mail, MapPin, Menu, Phone, X } from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { houseRules, houseRulesContact } from "@/lib/house-rules";
 import { BookingForm } from "@/components/BookingDialog";
@@ -218,18 +218,36 @@ function HouseRules() {
 }
 
 export default function App() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuButton = useRef<HTMLButtonElement>(null);
   const filename = window.location.pathname.split("/").pop();
   const rulesPage = filename === "reglement.html";
   const page = pages.find(({ file }) => file === filename) ?? (rulesPage ? undefined : pages[0]);
 
   return (
     <TooltipProvider>
-      <header className="stay-header">
+      <header className="stay-header" onKeyDown={(event) => {
+        if (event.key === "Escape" && menuOpen) {
+          setMenuOpen(false);
+          menuButton.current?.focus();
+        }
+      }}>
         <div className="stay-shell header-inner">
           <BrandLink />
-          <nav aria-label="Navigation principale">
+          <button
+            className="stay-menu-toggle"
+            type="button"
+            ref={menuButton}
+            aria-controls="stay-navigation"
+            aria-expanded={menuOpen}
+            aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            {menuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
+          </button>
+          <nav id="stay-navigation" data-open={menuOpen} aria-label="Navigation principale">
             {pages.map(({ file, label }) => (
-              <a key={file} href={`./${file}`} aria-current={file === page?.file ? "page" : undefined}>{label}</a>
+              <a key={file} href={`./${file}`} onClick={() => setMenuOpen(false)} aria-current={file === page?.file ? "page" : undefined}>{label}</a>
             ))}
           </nav>
         </div>
