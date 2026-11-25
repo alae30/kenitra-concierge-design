@@ -85,3 +85,15 @@ Le site Vite est compilé avec `npm run build -- --base ./`. Sur un domaine HTTP
 Les contrats restent dans le stockage privé `rental-agreements`, accessible aux comptes autorisés. Les photos de logements envoyées au bucket `rental-photos` sont des médias publics, même pour les brouillons. Les demandes restent en attente jusqu’à confirmation. L’envoi d’e-mails est une intégration distincte.
 
 La compilation sans variables utilise le mode démonstration et les simulations restent dans le navigateur.
+
+### Déploiement Netlify
+
+Importer le dépôt GitHub et choisir la branche de production `codex/parcours-reservation`.
+Netlify utilise `netlify.toml` pour compiler et publier `dist`. Le mode connecté est
+réservé à `https://centerwarmstay.com`, à définir comme domaine principal dans Netlify.
+Les URL temporaires de déploiement restent en mode démonstration.
+
+Conserver le DNS chez le registraire et appliquer les valeurs affichées dans le panneau
+de vérification DNS du projet Netlify. Conserver les enregistrements MX et TXT du mail.
+Une fois le HTTPS fonctionnel, vérifier la connexion à `/gestion.html` sur le domaine
+et tester la réception des réservations avant d’ouvrir le formulaire aux clients.

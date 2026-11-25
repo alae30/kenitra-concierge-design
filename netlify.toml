@@ -1,0 +1,19 @@
+[build]
+  command = "npm run build -- --base ./"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[context.production.environment]
+  VITE_BOOKING_SITE_ORIGIN = "https://centerwarmstay.com"
+  VITE_SUPABASE_URL = "https://oydpabpsxagjutnuhvjb.supabase.co"
+  # Both keys are public client credentials. Supabase policies enforce access.
+  VITE_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_lp0Z_RtkYY5nStK0UujV6w_NKZE4KEv"
+  VITE_SUPABASE_FUNCTION_ANON_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im95ZHBhYnBzeGFnanV0bnVodmpiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU0NjA3ODgsImV4cCI6MjExMTAzNjc4OH0.7nEgBxnJT4Ez4bhoF9lrHjAjI7XtGx7Py8q7M9M8_CA"
+
+[[headers]]
+  for = "/gestion.html"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "no-store"
