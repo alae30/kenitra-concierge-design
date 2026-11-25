@@ -4,6 +4,9 @@ export type DemoBooking = {
   id: string;
   property: string;
   guest: string;
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
   email: string;
   arrival: string;
   departure: string;

@@ -1,7 +1,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2.119.2";
 import { jsPDF } from "jspdf";
 import { createBookingContract } from "../../../src/lib/booking-contract.ts";
-import { houseRules } from "../../../src/lib/house-rules.ts";
+import { houseRules, houseRulesVersion } from "../../../src/lib/house-rules.ts";
 
 const origin = Deno.env.get("BOOKING_SITE_ORIGIN");
 const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
@@ -52,7 +52,11 @@ Deno.serve(async (request) => {
     const arrival = read("arrival");
     const departure = read("departure");
     const guests = Number(read("guests"));
-    const name = read("name");
+    const firstName = read("firstName");
+    const lastName = read("lastName");
+    const phone = read("phone");
+    const phoneDigits = phone.replace(/\D/g, "");
+    const name = `${firstName} ${lastName}`;
     const email = read("email").toLowerCase();
     const total = Number(read("amount"));
     const recto = data.get("recto");
@@ -64,7 +68,8 @@ Deno.serve(async (request) => {
     const start = dateValue(arrival);
     const end = dateValue(departure);
     const nights = (end - start) / dayMillis;
-    if (!uuid.test(id) || !uuid.test(propertyId) || !name || name.length > 100 || email.length > 254 ||
+    if (!uuid.test(id) || !uuid.test(propertyId) || !firstName || firstName.length > 100 || !lastName || lastName.length > 100 || email.length > 254 ||
+      phone.length > 30 || !/^\+?[0-9 ().-]+$/.test(phone) || phoneDigits.length < 7 || phoneDigits.length > 15 ||
       !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !Number.isInteger(guests) || guests < 1 ||
       arrival < today || !(nights >= 1 && nights <= 365) || read("accepted") !== "yes" ||
       !jpeg(recto) || !jpeg(verso) || !(signature instanceof File) ||
@@ -112,7 +117,7 @@ Deno.serve(async (request) => {
     const pdf = createBookingContract({
       live: true,
       details: [property.title, `Dates : du ${arrival} au ${departure}`, `Voyageurs : ${guests}`,
-        `Montant du séjour : ${(amount / 100).toFixed(2)} MAD`, `Nom : ${name}`, `E-mail : ${email}`],
+        `Montant du séjour : ${(amount / 100).toFixed(2)} MAD`, `Nom : ${lastName}`, `Prénom : ${firstName}`, `Téléphone : ${phone}`, `E-mail : ${email}`],
       signedAt: signedAt.toLocaleString("fr-MA", { timeZone: "Africa/Casablanca" }).replace(/\s/g, " "),
       recto: photo(front), verso: photo(back), signature: signing,
     });
@@ -122,7 +127,8 @@ Deno.serve(async (request) => {
     if (uploadError) return reply(503, { error: "Le contrat ne peut pas être enregistré pour le moment." });
     const { error: insertError } = await client.from("rental_bookings").insert({
       id, property_id: propertyId, arrival, departure, guests, guest_name: name, guest_email: email,
-      total_mad: amount / 100, terms_version: "2026-11-25-fr",
+      guest_first_name: firstName, guest_last_name: lastName, guest_phone: phone,
+      total_mad: amount / 100, terms_version: houseRulesVersion,
       terms_text: houseRules.map(({ title, text }) => `${title}\n${text}`).join("\n\n"),
       signed_at: signedAt.toISOString(), contract_path: path,
     });

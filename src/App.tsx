@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
-import { Mail, MapPin, Menu, Phone, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Mail, MapPin, Menu, Phone, X } from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { houseRules, houseRulesContact } from "@/lib/house-rules";
 import { getPublishedProperties, rentalPhotoUrl, supabase, type RentalProperty } from "@/lib/supabase";
@@ -82,6 +82,7 @@ function Home() {
 
 function MainStay({ rentals }: { rentals: RentalProperty[] | null }) {
   const [selected, setSelected] = useState(0);
+  const swipeStart = useRef<{ id: number; x: number; y: number } | null>(null);
   const rental = rentals?.find((property) => property.featured);
   const property = rental ? {
     id: rental.id, title: rental.title, price: Number(rental.nightly_price_mad),
@@ -92,7 +93,12 @@ function MainStay({ rentals }: { rentals: RentalProperty[] | null }) {
     const src = rentalPhotoUrl(path);
     return { src, thumb: src, label: `Photo ${index + 1} du logement` };
   }) : photos;
-  const current = gallery[selected] ?? gallery[0];
+  const currentIndex = selected < gallery.length ? selected : 0;
+  const current = gallery[currentIndex];
+
+  function movePhoto(direction: number) {
+    setSelected((index) => ((index < gallery.length ? index : 0) + direction + gallery.length) % gallery.length);
+  }
 
   return (
     <>
@@ -104,15 +110,46 @@ function MainStay({ rentals }: { rentals: RentalProperty[] | null }) {
       <div className="stay-detail">
         <div>
           <figure className="detail-photo photo-frame">
-            <img key={current.src} src={current.src} decoding="async" alt={current.label} />
-            <figcaption>{current.label}</figcaption>
+            <div className="detail-photo-stage" onKeyDown={(event) => {
+              if (gallery.length < 2 || (event.key !== "ArrowLeft" && event.key !== "ArrowRight")) return;
+              event.preventDefault();
+              movePhoto(event.key === "ArrowRight" ? 1 : -1);
+            }} onPointerDown={(event) => {
+              if (event.pointerType !== "touch" || !event.isPrimary || event.target !== event.currentTarget.firstElementChild) return;
+              swipeStart.current = { id: event.pointerId, x: event.clientX, y: event.clientY };
+            }} onPointerUp={(event) => {
+              const start = swipeStart.current;
+              if (start?.id !== event.pointerId) return;
+              swipeStart.current = null;
+              const distance = event.clientX - start.x;
+              if (gallery.length > 1 && Math.abs(distance) >= 45 && Math.abs(distance) > Math.abs(event.clientY - start.y)) {
+                movePhoto(distance < 0 ? 1 : -1);
+              }
+            }} onPointerCancel={(event) => {
+              if (swipeStart.current?.id === event.pointerId) swipeStart.current = null;
+            }}>
+              <img src={current.src} decoding="async" alt={current.label} draggable={false} />
+              {gallery.length > 1 && (
+                <>
+                  <button className="gallery-arrow gallery-arrow-prev" type="button" aria-label="Photo précédente" onClick={() => movePhoto(-1)}>
+                    <ChevronLeft aria-hidden="true" size={22} />
+                  </button>
+                  <button className="gallery-arrow gallery-arrow-next" type="button" aria-label="Photo suivante" onClick={() => movePhoto(1)}>
+                    <ChevronRight aria-hidden="true" size={22} />
+                  </button>
+                </>
+              )}
+            </div>
+            <figcaption aria-live="polite">
+              <span>{current.label}</span>
+              <span>{currentIndex + 1} / {gallery.length}</span>
+            </figcaption>
           </figure>
           <div className="gallery-options" role="group" aria-label="Galerie de photos">
             {gallery.map((photo, index) => (
               <button className="photo-frame" key={photo.label} type="button" aria-label={`Afficher ${photo.label.toLocaleLowerCase("fr")}`}
-                aria-pressed={index === selected} onClick={() => setSelected(index)}>
+                aria-pressed={index === currentIndex} onClick={() => setSelected(index)}>
                 <img loading="lazy" decoding="async" width={396} height={264} src={photo.thumb} alt="" />
-                <span>{photo.label}</span>
               </button>
             ))}
           </div>

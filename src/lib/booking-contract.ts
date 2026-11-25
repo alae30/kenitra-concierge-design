@@ -1,4 +1,5 @@
 import { jsPDF } from "jspdf";
+import { contractLogo } from "./contract-logo.ts";
 import { demoTerms, houseRules, houseRulesContact } from "./house-rules.ts";
 
 export type ContractImage = { data: string | Uint8Array; width: number; height: number };
@@ -37,19 +38,30 @@ export function createBookingContract({
 }) {
   const pdf = new jsPDF();
   pdf.setProperties({ title: live ? "Contrat de séjour" : "Contrat de séjour — Démonstration" });
+  pdf.addImage(contractLogo, "PNG", 18, 12, 15, 13.3);
+  pdf.setTextColor("#79412e");
   pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(20);
-  pdf.text("Contrat de séjour", 18, 23);
+  pdf.setFontSize(11);
+  pdf.text("CENTER WARM STAY", 37, 21);
+  pdf.setDrawColor("#d8bbab");
+  pdf.line(18, 28, 192, 28);
+  pdf.setTextColor("#29201a");
+  pdf.setFontSize(21);
+  pdf.text("Contrat de séjour", 18, 39);
   pdf.setFontSize(10);
   pdf.setFont("helvetica", "normal");
-  pdf.text(live ? "DEMANDE SOUMISE À CONFIRMATION" : "DÉMONSTRATION", 18, 30);
+  pdf.text(live ? "DEMANDE SOUMISE À CONFIRMATION" : "DÉMONSTRATION", 18, 46);
 
-  let y = 38;
+  let y = 54;
   function writeParagraph(text: string, size: number, bold = false) {
     pdf.setFont("helvetica", bold ? "bold" : "normal");
     pdf.setFontSize(size);
     const lines: string[] = pdf.splitTextToSize(text, 174);
     const lineHeight = size * 0.41;
+    if (y + (lines.length - 1) * lineHeight > 278) {
+      pdf.addPage();
+      y = 20;
+    }
     pdf.text(lines, 18, y);
     y += lines.length * lineHeight;
   }

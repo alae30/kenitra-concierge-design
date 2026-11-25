@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent, type PointerEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent, type PointerEvent } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,23 +25,41 @@ function IdentityPhoto({ side }: { side: "Recto" | "Verso" }) {
     return () => URL.revokeObjectURL(url);
   }, [file]);
 
+  const camera = useRef<HTMLInputElement>(null);
+  const picker = useRef<HTMLInputElement>(null);
+  const name = side.toLowerCase();
+
+  function selectPhoto(event: ChangeEvent<HTMLInputElement>, otherInput: HTMLInputElement | null) {
+    const input = event.currentTarget;
+    const image = input.files?.[0];
+    if (!image) return;
+
+    if (otherInput) otherInput.value = "";
+    if (!["image/jpeg", "image/png"].includes(image.type) || !image.size || image.size > 5 * 1024 * 1024) {
+      input.value = "";
+      setFile(null);
+      setError("Choisis une image JPEG ou PNG de 5 Mo maximum.");
+      return;
+    }
+    setError("");
+    setFile(image);
+  }
+
   return (
-    <label className="grid gap-2 text-sm">
-      {side}
-      <Input name={side.toLowerCase()} type="file" required accept="image/jpeg,image/png" capture="environment" onChange={(event) => {
-        const image = event.target.files?.[0];
-        if (image && (!["image/jpeg", "image/png"].includes(image.type) || image.size > 5 * 1024 * 1024)) {
-          event.target.value = "";
-          setFile(null);
-          setError("Choisis une image JPEG ou PNG de 5 Mo maximum.");
-          return;
-        }
-        setError("");
-        setFile(image ?? null);
-      }} />
+    <fieldset className="grid min-w-0 gap-2 text-sm">
+      <legend className="mb-2">{side}</legend>
+      <input ref={camera} name={name} type="file" accept="image/jpeg,image/png" capture="environment"
+        hidden onChange={(event) => selectPhoto(event, picker.current)} />
+      <input ref={picker} name={name} type="file" accept="image/jpeg,image/png"
+        hidden onChange={(event) => selectPhoto(event, camera.current)} />
+      <Button type="button" variant="outline" aria-label={`Prendre une photo du ${name}`}
+        onClick={() => camera.current?.click()}>Prendre une photo</Button>
+      <Button type="button" variant="outline" aria-label={`Choisir un fichier pour le ${name}`}
+        onClick={() => picker.current?.click()}>Choisir un fichier</Button>
       {error && <span role="alert">{error}</span>}
-      {preview && <img className="h-24 w-full rounded-md object-contain bg-muted" src={preview} alt={`Aperçu du ${side.toLowerCase()}`} />}
-    </label>
+      {file && <span role="status" className="break-all">{file.name}</span>}
+      {preview && <img className="h-24 w-full rounded-md object-contain bg-muted" src={preview} alt={`Aperçu du ${name}`} />}
+    </fieldset>
   );
 }
 
@@ -106,9 +124,17 @@ export function BookingForm({ property }: { property: Property }) {
       return;
     }
     const data = new FormData(event.currentTarget);
-    const recto = data.get("recto");
-    const verso = data.get("verso");
-    if (!(recto instanceof File) || !(verso instanceof File) || !recto.size || !verso.size) {
+    const firstName = String(data.get("firstName") ?? "").trim();
+    const lastName = String(data.get("lastName") ?? "").trim();
+    const phone = String(data.get("phone") ?? "").trim();
+    const digits = phone.replace(/\D/g, "");
+    if (!firstName || !lastName || !/^\+?[0-9 ().-]+$/.test(phone) || digits.length < 7 || digits.length > 15) {
+      setStatus("Renseigne ton nom, ton prénom et un numéro de téléphone valide.");
+      return;
+    }
+    const recto = data.getAll("recto").find((entry): entry is File => entry instanceof File && entry.size > 0);
+    const verso = data.getAll("verso").find((entry): entry is File => entry instanceof File && entry.size > 0);
+    if (!recto || !verso) {
       setStatus("Ajoute une image pour le recto et une autre pour le verso.");
       return;
     }
@@ -121,8 +147,11 @@ export function BookingForm({ property }: { property: Property }) {
       const booking = {
         id: crypto.randomUUID(),
         property: property.title,
-        guest: String(data.get("name")),
-        email: String(data.get("email")),
+        guest: `${firstName} ${lastName}`,
+        firstName,
+        lastName,
+        phone,
+        email: String(data.get("email")).trim(),
         arrival,
         departure,
         guests: Number(data.get("guests")),
@@ -148,8 +177,10 @@ export function BookingForm({ property }: { property: Property }) {
           `Dates : du ${arrival} au ${departure}`,
           `Voyageurs : ${data.get("guests")}`,
           `Montant indicatif : ${total.replace(/\s/g, " ")}`,
-          `Nom : ${data.get("name")}`,
-          `E-mail : ${data.get("email")}`,
+          `Nom : ${lastName}`,
+          `Prénom : ${firstName}`,
+          `Téléphone : ${phone}`,
+          `E-mail : ${booking.email}`,
         ],
         signedAt: new Date().toLocaleString("fr-MA", { timeZone: "Africa/Casablanca" }).replace(/\s/g, " "),
         recto: frontImage,
@@ -186,12 +217,16 @@ export function BookingForm({ property }: { property: Property }) {
         <output className="self-end pb-2 text-sm" aria-live="polite">{total ? `${nights} ${nights === 1 ? 'nuit' : 'nuits'} · ${total}` : `${money.format(property.price)} / nuit`}</output>
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
-        <label className="grid gap-2 text-sm">{live ? "Nom complet" : "Nom fictif"}<Input name="name" required maxLength={100} placeholder="Camille Exemple" /></label>
-        <label className="grid gap-2 text-sm">{live ? "E-mail" : "E-mail fictif"}<Input name="email" type="email" required maxLength={254} placeholder="camille@example.com" /></label>
+        <label className="grid gap-2 text-sm">Nom<Input name="lastName" autoComplete="family-name" required maxLength={100} placeholder="El Amrani" /></label>
+        <label className="grid gap-2 text-sm">Prénom<Input name="firstName" autoComplete="given-name" required maxLength={100} placeholder="Yasmine" /></label>
+        <label className="grid gap-2 text-sm">Téléphone<Input name="phone" type="tel" autoComplete="tel" required maxLength={30} placeholder="+212 6 00 00 00 00" /></label>
+        <label className="grid gap-2 text-sm">Adresse e-mail<Input name="email" type="email" autoComplete="email" required maxLength={254} placeholder="yasmine.elamrani@example.com" /></label>
+        {!live && <p className="text-sm text-muted-foreground sm:col-span-2">Utilise des coordonnées fictives pour cette démonstration.</p>}
       </div>
       <fieldset className="grid min-w-0 gap-2 rounded-lg border p-3">
         <legend className="px-1 text-sm font-semibold">Carte d’identité marocaine</legend>
         <p className="text-sm text-muted-foreground">{live ? "Les images seront incluses au contrat, accessible à la conciergerie dans son espace administrateur." : "Utilise deux images fictives. Elles seront intégrées au contrat PDF téléchargé sur cet appareil."}</p>
+        <p className="text-sm text-muted-foreground">JPEG ou PNG, 5 Mo maximum par image.</p>
         <div className="grid gap-3 sm:grid-cols-2">
           <IdentityPhoto side="Recto" />
           <IdentityPhoto side="Verso" />

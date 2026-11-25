@@ -58,7 +58,7 @@ export default function BookingDashboard({ live = false }: { live?: boolean }) {
   const contractCount = bookings.filter(({ contract, contractPath }) => contract || contractPath).length;
   const filtered = bookings.filter((booking) => (
     (status === "all" || booking.status === status)
-    && [booking.id, booking.guest, booking.email, booking.property].some((value) =>
+    && [booking.id, booking.guest, booking.email, booking.phone ?? "", booking.property].some((value) =>
       value.toLocaleLowerCase("fr").includes(query.trim().toLocaleLowerCase("fr")))
   ));
   const metrics = [
@@ -112,7 +112,7 @@ export default function BookingDashboard({ live = false }: { live?: boolean }) {
           <div className="dashboard-filters">
             <label>
               Rechercher
-              <span className="dashboard-search"><Search aria-hidden="true" size={16} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Nom, e-mail ou logement" /></span>
+              <span className="dashboard-search"><Search aria-hidden="true" size={16} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Nom, téléphone, e-mail ou logement" /></span>
             </label>
             <label>
               Statut
@@ -145,7 +145,7 @@ export default function BookingDashboard({ live = false }: { live?: boolean }) {
             {selected ? (
               <>
                 <dl className="dashboard-details">
-                  <div><dt>Voyageur</dt><dd>{selected.guest}<br />{selected.email}</dd></div>
+                  <div><dt>Voyageur</dt><dd>{selected.guest}<br />{selected.email}{selected.phone && <><br />{selected.phone}</>}</dd></div>
                   <div><dt>Séjour</dt><dd>{dateLabel(selected.arrival)} au {dateLabel(selected.departure)}<br />{selected.guests} voyageur(s)</dd></div>
                   <div><dt>Logement</dt><dd>{selected.property}</dd></div>
                   <div><dt>Montant</dt><dd>{money.format(selected.amount)}</dd></div>

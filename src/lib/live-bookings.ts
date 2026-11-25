@@ -7,13 +7,14 @@ export type LiveBooking = DemoBooking & { contractPath?: string };
 export async function listLiveBookings(): Promise<LiveBooking[]> {
   if (!supabase) throw new Error("Supabase indisponible");
   const { data, error } = await supabase.from("rental_bookings")
-    .select("id, arrival, departure, guests, guest_name, guest_email, total_mad, status, created_at, contract_path, rental_properties(title)")
+    .select("id, arrival, departure, guests, guest_name, guest_email, guest_first_name, guest_last_name, guest_phone, total_mad, status, created_at, contract_path, rental_properties(title)")
     .order("created_at", { ascending: false });
   if (error) throw error;
   return data.map((row) => ({
     id: row.id,
     property: (row.rental_properties as unknown as { title: string } | null)?.title ?? "Logement",
-    guest: row.guest_name, email: row.guest_email, arrival: row.arrival, departure: row.departure,
+    guest: row.guest_name, email: row.guest_email, firstName: row.guest_first_name ?? undefined,
+    lastName: row.guest_last_name ?? undefined, phone: row.guest_phone ?? undefined, arrival: row.arrival, departure: row.departure,
     guests: row.guests, amount: Number(row.total_mad), status: row.status as BookingStatus,
     createdAt: row.created_at, contractPath: row.contract_path ?? undefined,
   }));
@@ -38,7 +39,7 @@ export async function submitLiveBooking(booking: DemoBooking, propertyId: string
   if (!supabase) throw new Error("Supabase indisponible");
   const body = new FormData();
   for (const [name, value] of Object.entries({
-    id: booking.id, property: propertyId, name: booking.guest, email: booking.email,
+    id: booking.id, property: propertyId, firstName: booking.firstName, lastName: booking.lastName, phone: booking.phone, email: booking.email,
     arrival: booking.arrival, departure: booking.departure, guests: booking.guests,
     amount: booking.amount, accepted: "yes",
   })) body.append(name, String(value));

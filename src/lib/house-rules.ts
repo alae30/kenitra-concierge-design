@@ -8,7 +8,10 @@ export const houseRules = [
   { title: "Équipements", text: "Merci d'utiliser les équipements avec soin. En cas de dommage, perte ou problème, veuillez le signaler immédiatement." },
   { title: "Utilisation responsable", text: "L’eau et l’électricité doivent être utilisés raisonnablement. Ne pas déplacer le mobilier sans nécessité." },
   { title: "Respect du règlement", text: "Tout non-respect grave de ces règles peut entraîner une annulation immédiate du séjour." },
+  { title: "Respect de la loi marocaine", text: "Le voyageur s’engage à utiliser le logement conformément à la législation marocaine. Dans les limites prévues par la loi, Center Warm Stay décline toute responsabilité pour les actes du voyageur liés à une utilisation illégale du logement." },
 ];
+
+export const houseRulesVersion = "2026-11-25-fr-v2";
 
 export const houseRulesContact = "+212 629 27 53 82";
 
