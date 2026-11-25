@@ -88,7 +88,7 @@ La compilation sans variables utilise le mode démonstration et les simulations 
 
 ### Déploiement Netlify
 
-Importer le dépôt GitHub et choisir la branche de production `codex/parcours-reservation`.
+Importer le dépôt GitHub et choisir la branche de production `main`.
 Netlify utilise `netlify.toml` pour compiler et publier `dist`. Le mode connecté est
 réservé à `https://centerwarmstay.com`, à définir comme domaine principal dans Netlify.
 Les URL temporaires de déploiement restent en mode démonstration.
