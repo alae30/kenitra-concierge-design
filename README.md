@@ -97,3 +97,8 @@ Conserver le DNS chez le registraire et appliquer les valeurs affichées dans le
 de vérification DNS du projet Netlify. Conserver les enregistrements MX et TXT du mail.
 Une fois le HTTPS fonctionnel, vérifier la connexion à `/gestion.html` sur le domaine
 et tester la réception des réservations avant d’ouvrir le formulaire aux clients.
+
+Dans **Supabase → Authentication → URL Configuration**, autoriser la redirection
+exacte `https://centerwarmstay.com/gestion.html?mode=recovery`. Un administrateur
+qui n’a pas encore de mot de passe peut alors cliquer sur « Créer ou réinitialiser
+mon mot de passe » à partir de la page de gestion.
