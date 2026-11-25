@@ -1,7 +1,8 @@
-import { lazy, Suspense, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Mail, MapPin, Menu, Phone, X } from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { houseRules, houseRulesContact } from "@/lib/house-rules";
+import { getPublishedProperties, rentalPhotoUrl, supabase, type RentalProperty } from "@/lib/supabase";
 import { BookingForm } from "@/components/BookingDialog";
 import PropertiesSection from "@/components/PropertiesSection";
 import brandMark from "@/assets/center-warm-stay.svg";
@@ -24,7 +25,7 @@ import coinTeleThumb from "@/assets/stays/coin-tele-mini.webp";
 import chambre from "@/assets/stays/chambre.webp";
 import chambreThumb from "@/assets/stays/chambre-mini.webp";
 
-const BookingDashboard = lazy(() => import("@/components/BookingDashboard"));
+const AdminWorkspace = lazy(() => import("@/components/AdminWorkspace"));
 
 const mainStay = { title: "Center Warm Stay", price: 500, weekendPrice: 700, guests: 2 };
 const photos = [
@@ -79,24 +80,35 @@ function Home() {
   );
 }
 
-function MainStay() {
+function MainStay({ rentals }: { rentals: RentalProperty[] | null }) {
   const [selected, setSelected] = useState(0);
+  const rental = rentals?.find((property) => property.featured);
+  const property = rental ? {
+    id: rental.id, title: rental.title, price: Number(rental.nightly_price_mad),
+    weekendPrice: rental.weekend_price_mad === null ? undefined : Number(rental.weekend_price_mad),
+    guests: rental.max_guests,
+  } : mainStay;
+  const gallery = rental?.photos.length ? rental.photos.map((path, index) => {
+    const src = rentalPhotoUrl(path);
+    return { src, thumb: src, label: `Photo ${index + 1} du logement` };
+  }) : photos;
+  const current = gallery[selected] ?? gallery[0];
 
   return (
     <>
       <section className="page-intro">
         <p className="eyebrow">Logement principal · Kénitra</p>
-        <h1>{mainStay.title}</h1>
-        <p className="intro">Un studio cosy avec une cuisine ouverte, un coin salon avec télévision, un lit double et une salle d’eau avec douche.</p>
+        <h1>{property.title}</h1>
+        <p className="intro">{rental?.description || "Un studio cosy avec une cuisine ouverte, un coin salon avec télévision, un lit double et une salle d’eau avec douche."}</p>
       </section>
       <div className="stay-detail">
         <div>
           <figure className="detail-photo photo-frame">
-            <img key={photos[selected].src} src={photos[selected].src} decoding="async" alt={photos[selected].label} />
-            <figcaption>{photos[selected].label}</figcaption>
+            <img key={current.src} src={current.src} decoding="async" alt={current.label} />
+            <figcaption>{current.label}</figcaption>
           </figure>
           <div className="gallery-options" role="group" aria-label="Galerie de photos">
-            {photos.map((photo, index) => (
+            {gallery.map((photo, index) => (
               <button className="photo-frame" key={photo.label} type="button" aria-label={`Afficher ${photo.label.toLocaleLowerCase("fr")}`}
                 aria-pressed={index === selected} onClick={() => setSelected(index)}>
                 <img loading="lazy" decoding="async" width={396} height={264} src={photo.thumb} alt="" />
@@ -106,24 +118,24 @@ function MainStay() {
           </div>
         </div>
         <section id="reservation" className="booking-panel" aria-labelledby="booking-title">
-          <p className="eyebrow">Réservation · Démonstration</p>
+          <p className="eyebrow">{supabase ? "Réservation" : "Réservation · Démonstration"}</p>
           <h2 id="booking-title">Préparer mon séjour</h2>
-          <BookingForm property={mainStay} />
+          {!supabase || rental ? <BookingForm property={property} /> : <p>{rentals === null ? "Chargement…" : "Les réservations en ligne pour ce logement sont momentanément indisponibles."}</p>}
         </section>
       </div>
     </>
   );
 }
 
-function Concierge() {
+function Concierge({ rentals }: { rentals: RentalProperty[] | null }) {
   return (
     <>
       <section className="page-intro">
         <p className="eyebrow">Conciergerie · Kénitra et alentours</p>
         <h1>Autres logements</h1>
-        <p className="intro">Parcourez les logements, photos et tarifs d’exemple de cette démonstration.</p>
+        <p className="intro">{supabase ? "Découvrez les logements disponibles à Kénitra et aux alentours." : "Parcourez les logements, photos et tarifs d’exemple de cette démonstration."}</p>
       </section>
-      <PropertiesSection />
+      <PropertiesSection rentals={rentals} />
     </>
   );
 }
@@ -222,10 +234,21 @@ function HouseRules() {
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuButton = useRef<HTMLButtonElement>(null);
+  const [rentals, setRentals] = useState<RentalProperty[] | null>(null);
   const filename = window.location.pathname.split("/").pop();
   const rulesPage = filename === "reglement.html";
   const dashboardPage = filename === "gestion.html";
   const page = pages.find(({ file }) => file === filename) ?? (rulesPage || dashboardPage ? undefined : pages[0]);
+
+  useEffect(() => {
+    if (!supabase || (filename !== "logement.html" && filename !== "conciergerie.html")) return;
+    let active = true;
+    void getPublishedProperties().then(
+      (rows) => { if (active) setRentals(rows); },
+      () => { if (active) setRentals([]); },
+    );
+    return () => { active = false; };
+  }, [filename]);
 
   return (
     <TooltipProvider>
@@ -256,7 +279,7 @@ export default function App() {
         </div>
       </header>
       <main className="stay-shell">
-        {dashboardPage ? <Suspense fallback={<p>Chargement du tableau de bord…</p>}><BookingDashboard /></Suspense> : rulesPage ? <HouseRules /> : page?.file === "logement.html" ? <MainStay /> : page?.file === "conciergerie.html" ? <Concierge /> : page?.file === "contact.html" ? <Contact /> : <Home />}
+        {dashboardPage ? <Suspense fallback={<p>Chargement du tableau de bord…</p>}><AdminWorkspace /></Suspense> : rulesPage ? <HouseRules /> : page?.file === "logement.html" ? <MainStay rentals={rentals} /> : page?.file === "conciergerie.html" ? <Concierge rentals={rentals} /> : page?.file === "contact.html" ? <Contact /> : <Home />}
       </main>
       <footer className="stay-footer">
         <div className="stay-shell">

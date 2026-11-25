@@ -1,7 +1,7 @@
 import { jsPDF } from "jspdf";
-import { demoTerms, houseRules, houseRulesContact } from "./house-rules";
+import { demoTerms, houseRules, houseRulesContact } from "./house-rules.ts";
 
-type ContractImage = { data: string; width: number; height: number };
+export type ContractImage = { data: string | Uint8Array; width: number; height: number };
 
 export async function readContractPhoto(file: File): Promise<ContractImage> {
   const url = URL.createObjectURL(file);
@@ -26,22 +26,23 @@ export async function readContractPhoto(file: File): Promise<ContractImage> {
 }
 
 export function createBookingContract({
-  details, signedAt, recto, verso, signature,
+  details, signedAt, recto, verso, signature, live = false,
 }: {
   details: string[];
   signedAt: string;
   recto: ContractImage;
   verso: ContractImage;
-  signature: string;
+  signature: string | Uint8Array;
+  live?: boolean;
 }) {
   const pdf = new jsPDF();
-  pdf.setProperties({ title: "Contrat de séjour — Démonstration" });
+  pdf.setProperties({ title: live ? "Contrat de séjour" : "Contrat de séjour — Démonstration" });
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(20);
   pdf.text("Contrat de séjour", 18, 23);
   pdf.setFontSize(10);
   pdf.setFont("helvetica", "normal");
-  pdf.text("DÉMONSTRATION", 18, 30);
+  pdf.text(live ? "DEMANDE SOUMISE À CONFIRMATION" : "DÉMONSTRATION", 18, 30);
 
   let y = 38;
   function writeParagraph(text: string, size: number, bold = false) {
@@ -55,7 +56,7 @@ export function createBookingContract({
 
   writeParagraph(details.join("\n"), 10);
   y += 3;
-  writeParagraph(demoTerms, 10);
+  writeParagraph(live ? "Le séjour est confirmé après validation du logement par la conciergerie." : demoTerms, 10);
   y += 5;
   writeParagraph("Conditions générales du séjour", 14, true);
   y += 2;

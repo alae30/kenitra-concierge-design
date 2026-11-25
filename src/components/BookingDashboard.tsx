@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CalendarDays, Download, FileText, Inbox, Search, Wallet } from "lucide-react";
-import { bookingsChanged, downloadDemoContract, listDemoBookings, saveDemoBooking, type BookingStatus, type DemoBooking } from "@/lib/demo-bookings";
+import { bookingsChanged, downloadDemoContract, listDemoBookings, saveDemoBooking, type BookingStatus } from "@/lib/demo-bookings";
+import { downloadLiveContract, listLiveBookings, updateLiveStatus, type LiveBooking } from "@/lib/live-bookings";
 import "./BookingDashboard.css";
 
 const statusNames: Record<BookingStatus, string> = {
@@ -14,8 +15,8 @@ const money = new Intl.NumberFormat("fr-MA", { style: "currency", currency: "MAD
 const calendarDate = new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium", timeZone: "UTC" });
 const dateLabel = (date: string) => calendarDate.format(new Date(date));
 
-export default function BookingDashboard() {
-  const [bookings, setBookings] = useState<DemoBooking[]>([]);
+export default function BookingDashboard({ live = false }: { live?: boolean }) {
+  const [bookings, setBookings] = useState<LiveBooking[]>([]);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<BookingStatus | "all">("all");
   const [selectedId, setSelectedId] = useState("");
@@ -27,7 +28,7 @@ export default function BookingDashboard() {
     let active = true;
     async function refresh() {
       try {
-        const rows = await listDemoBookings();
+        const rows = await (live ? listLiveBookings() : listDemoBookings());
         if (active) setBookings(rows.sort((a, b) => b.createdAt.localeCompare(a.createdAt)));
       } catch {
         if (active) setMessage("Impossible de lire les réservations dans ce navigateur.");
@@ -41,18 +42,20 @@ export default function BookingDashboard() {
     void refresh();
     window.addEventListener("focus", refresh);
     window.addEventListener("storage", onStorage);
+    const polling = live ? window.setInterval(refresh, 15_000) : undefined;
     return () => {
       active = false;
       window.removeEventListener("focus", refresh);
       window.removeEventListener("storage", onStorage);
+      window.clearInterval(polling);
     };
-  }, []);
+  }, [live]);
 
   const today = new Intl.DateTimeFormat("sv-SE", { timeZone: "Africa/Casablanca" }).format(new Date());
   const selected = bookings.find(({ id }) => id === selectedId);
   const confirmed = bookings.filter(({ status }) => status === "confirmed");
   const arrivals = confirmed.filter(({ arrival }) => arrival >= today).sort((a, b) => a.arrival.localeCompare(b.arrival));
-  const contractCount = bookings.filter(({ contract }) => contract).length;
+  const contractCount = bookings.filter(({ contract, contractPath }) => contract || contractPath).length;
   const filtered = bookings.filter((booking) => (
     (status === "all" || booking.status === status)
     && [booking.id, booking.guest, booking.email, booking.property].some((value) =>
@@ -65,15 +68,16 @@ export default function BookingDashboard() {
     { label: "Montant confirmé", value: money.format(confirmed.reduce((sum, booking) => sum + booking.amount, 0)), Icon: Wallet },
   ];
 
-  async function updateStatus(booking: DemoBooking, nextStatus: BookingStatus) {
+  async function updateStatus(booking: LiveBooking, nextStatus: BookingStatus) {
     setSaving(true);
     setMessage("");
     try {
-      await saveDemoBooking({ ...booking, status: nextStatus });
+      if (live) await updateLiveStatus(booking, nextStatus);
+      else await saveDemoBooking({ ...booking, status: nextStatus });
       setBookings((rows) => rows.map((row) => row.id === booking.id ? { ...row, status: nextStatus } : row));
       setMessage(`Statut mis à jour : ${statusNames[nextStatus].toLowerCase()}.`);
-    } catch {
-      setMessage("La modification du statut n’a pas pu être enregistrée.");
+    } catch (error) {
+      setMessage(live && error instanceof Error ? error.message : "La modification du statut n’a pas pu être enregistrée.");
     } finally {
       setSaving(false);
     }
@@ -82,15 +86,15 @@ export default function BookingDashboard() {
   return (
     <div className="booking-dashboard">
       <section className="page-intro">
-        <p className="eyebrow">Espace de gestion · Démonstration</p>
+        <p className="eyebrow">{live ? "Espace administrateur" : "Espace de gestion · Démonstration"}</p>
         <h1>Suivi des réservations</h1>
         <p className="intro">Retrouvez les demandes, les prochaines arrivées et les contrats du studio.</p>
       </section>
 
-      <div className="dashboard-note">
+      {!live && <div className="dashboard-note">
         Les simulations et leurs PDF restent dans ce navigateur. Utilisez des données et des pièces d’identité fictives.
         <a className="stay-contact-link" href="./logement.html#reservation">Tester une réservation</a>
-      </div>
+      </div>}
 
       <dl className="dashboard-metrics">
         {metrics.map(({ label, value, Icon }) => (
@@ -120,7 +124,7 @@ export default function BookingDashboard() {
           </div>
 
           {loading ? <p>Chargement…</p> : !filtered.length ? (
-            <p>{bookings.length ? "Aucune demande ne correspond aux filtres." : "Les demandes simulées apparaîtront ici après la génération du contrat."}</p>
+            <p>{bookings.length ? "Aucune demande ne correspond aux filtres." : live ? "Aucune demande reçue pour le moment." : "Les demandes simulées apparaîtront ici après la génération du contrat."}</p>
           ) : (
             <ul className="dashboard-rows">
               {filtered.map((booking) => (
@@ -153,7 +157,10 @@ export default function BookingDashboard() {
                     {Object.entries(statusNames).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
                   </select>
                 </label>
-                {selected.contract && <Button type="button" onClick={() => downloadDemoContract(selected)}><Download aria-hidden="true" /> Télécharger le contrat signé</Button>}
+                {(selected.contract || selected.contractPath) && <Button type="button" onClick={() => {
+                  if (live) void downloadLiveContract(selected).catch(() => setMessage("Le contrat n’a pas pu être téléchargé."));
+                  else downloadDemoContract(selected);
+                }}><Download aria-hidden="true" /> Télécharger le contrat signé</Button>}
               </>
             ) : <p>Sélectionnez une demande pour consulter ses détails et son contrat.</p>}
           </section>

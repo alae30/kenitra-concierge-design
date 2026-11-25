@@ -71,3 +71,17 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+
+## Mise en service de Center Warm Stay
+
+Le site Vite est compilé avec `npm run build -- --base ./`. Sur un domaine HTTPS dédié, déployer le dossier `dist` à la racine de ce domaine. La page de gestion est `/gestion.html`.
+
+1. Configurer `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` et `VITE_BOOKING_SITE_ORIGIN` d’après `.env.example`. L’origine exacte inclut le protocole et le domaine, sans slash final. Pour l’appel public de la fonction avec vérification JWT activée, renseigner `VITE_SUPABASE_FUNCTION_ANON_JWT` avec la clé **anon** JWT historique. La clé `service_role` reste dans Supabase.
+2. Dans Supabase Authentication, créer et vérifier le compte du propriétaire. Une fois le compte vérifié, ajouter son UUID à `public.rental_admins.user_id` par une opération d’administration. Les comptes ordinaires ne peuvent pas s’ajouter à cette liste.
+3. Dans l’espace de gestion, vérifier les tarifs, les photos et les informations du logement principal, puis le publier. Les autres logements restent en brouillon jusqu’à leur publication.
+4. Configurer dans Supabase Edge Functions le secret `BOOKING_SITE_ORIGIN` avec la même origine dédiée. La fonction `reservation-request` reste inactive tant que ce secret manque. Tester la soumission, la confirmation et le téléchargement du contrat avec des données fictives avant d’ouvrir la réception. Configurer les limites anti-abus de l’hébergeur et la durée de conservation des contrats avant de collecter de vraies pièces d’identité.
+
+Les contrats restent dans le stockage privé `rental-agreements`, accessible aux comptes autorisés. Les photos de logements envoyées au bucket `rental-photos` sont des médias publics, même pour les brouillons. Les demandes restent en attente jusqu’à confirmation. L’envoi d’e-mails est une intégration distincte.
+
+La compilation sans variables utilise le mode démonstration et les simulations restent dans le navigateur.
