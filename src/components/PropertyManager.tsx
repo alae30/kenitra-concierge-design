@@ -7,7 +7,7 @@ const acceptedTypes: Record<string, string> = { "image/jpeg": "jpg", "image/png"
 
 export default function PropertyManager() {
   const [properties, setProperties] = useState<RentalProperty[]>([]);
-  const [selected, setSelected] = useState<RentalProperty | null>(null);
+  const [selected, setSelected] = useState<RentalProperty | null>();
   const [photos, setPhotos] = useState<string[]>([]);
   const [version, setVersion] = useState(0);
   const [saving, setSaving] = useState(false);
@@ -23,7 +23,7 @@ export default function PropertyManager() {
     return () => { active = false; };
   }, []);
 
-  function edit(property: RentalProperty | null) {
+  function edit(property: RentalProperty | null | undefined) {
     setSelected(property);
     setPhotos(property?.photos ?? []);
     setMessage("");
@@ -32,7 +32,7 @@ export default function PropertyManager() {
 
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!supabase || saving) return;
+    if (!supabase || saving || selected === undefined) return;
     const api = supabase;
     const form = new FormData(event.currentTarget);
     const id = selected?.id ?? crypto.randomUUID();
@@ -95,7 +95,7 @@ export default function PropertyManager() {
           {properties.map((property) => (
             <li key={property.id}>
               <button type="button" className="dashboard-row" aria-pressed={selected?.id === property.id} disabled={saving} onClick={() => edit(property)}>
-                <span><strong>{property.title}</strong><small>{property.location} · {property.nightly_price_mad} MAD/nuit</small></span>
+                <span><strong>{property.title}</strong><small>{property.featured ? "Logement principal · " : ""}{property.location} · {property.nightly_price_mad} MAD/nuit</small></span>
                 <span>{property.published ? "Publié" : "Brouillon"}</span>
               </button>
             </li>
@@ -103,7 +103,11 @@ export default function PropertyManager() {
         </ul>
       </section>
       <section className="dashboard-card">
-        <h2>{selected ? "Modifier le logement" : "Nouveau logement"}</h2>
+        <h2>{selected === undefined ? "Fiche logement" : selected?.featured ? "Modifier le logement principal" : selected ? "Modifier le logement" : "Ajouter un autre logement"}</h2>
+        {selected === undefined ? (
+          <p>Choisis un logement à modifier ou clique sur « Ajouter un logement » pour créer une nouvelle fiche.</p>
+        ) : (
+        <>
         <form key={version} className="grid gap-4" onSubmit={save}>
           <label className="grid gap-1">Nom<Input name="title" required maxLength={100} defaultValue={selected?.title} /></label>
           <label className="grid gap-1">Localisation<Input name="location" required maxLength={180} defaultValue={selected?.location} /></label>
@@ -121,8 +125,13 @@ export default function PropertyManager() {
           </ul>}
           <label className="grid gap-1">Ajouter des photos<Input name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple /></label>
           <label className="flex gap-2"><input type="checkbox" name="published" defaultChecked={selected?.published} /> Publier sur le site</label>
-          <Button disabled={saving}>{saving ? "Enregistrement…" : "Enregistrer le logement"}</Button>
+          <div className="flex flex-wrap gap-2">
+            <Button disabled={saving}>{saving ? "Enregistrement…" : selected ? "Enregistrer les modifications" : "Créer le logement"}</Button>
+            <Button type="button" variant="outline" disabled={saving} onClick={() => edit(undefined)}>Fermer la fiche</Button>
+          </div>
         </form>
+        </>
+        )}
         {message && <p role="status" className="mt-3">{message}</p>}
       </section>
     </div>
