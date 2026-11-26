@@ -12,6 +12,13 @@ it("opens the demo and calculates the price from arrival and departure", () => {
 
   const total = new Intl.NumberFormat("fr-MA", { style: "currency", currency: "MAD" }).format(1900);
   expect(screen.getByRole("status")).toHaveTextContent(`3 nuits · ${total.replace(/\s/g, " ")}`);
-  expect(screen.getByLabelText("Recto")).toBeRequired();
-  expect(screen.getByLabelText("Verso")).toBeRequired();
+  for (const side of ["recto", "verso"]) {
+    const trigger = screen.getByRole("button", { name: `Ajouter le ${side}` });
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByRole("button", { name: `Prendre une photo du ${side}` })).not.toBeInTheDocument();
+    fireEvent.click(trigger);
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("button", { name: `Prendre une photo du ${side}` })).toBeEnabled();
+    expect(screen.getByRole("button", { name: `Choisir un fichier pour le ${side}` })).toBeEnabled();
+  }
 });

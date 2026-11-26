@@ -3,6 +3,7 @@ import type { Session } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/lib/supabase";
+import ConciergeDashboard from "./ConciergeDashboard";
 import BookingDashboard from "./BookingDashboard";
 import PropertyManager from "./PropertyManager";
 
@@ -10,7 +11,7 @@ export default function AdminWorkspace() {
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(false);
   const [authorizedUser, setAuthorizedUser] = useState<string | null>(null);
-  const [tab, setTab] = useState<"bookings" | "properties">("bookings");
+  const [tab, setTab] = useState<"bookings" | "properties" | "concierge">("bookings");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const [recovery, setRecovery] = useState(() => new URLSearchParams(window.location.search).get("mode") === "recovery");
@@ -112,7 +113,7 @@ export default function AdminWorkspace() {
     if (response?.error) setMessage("La déconnexion n’a pas pu être finalisée. Recharge la page.");
   }
 
-  if (!supabase) return <BookingDashboard />;
+  if (!supabase) return <p className="py-8">Le tableau de bord est momentanément indisponible.</p>;
   if (!ready) return <p>Vérification de la session…</p>;
 
   return (
@@ -122,10 +123,13 @@ export default function AdminWorkspace() {
           <div className="dashboard-note mt-6" aria-label="Navigation de gestion">
             <Button variant={tab === "bookings" ? "default" : "outline"} aria-pressed={tab === "bookings"} onClick={() => setTab("bookings")}>Réservations</Button>
             <Button variant={tab === "properties" ? "default" : "outline"} aria-pressed={tab === "properties"} onClick={() => setTab("properties")}>Logements</Button>
+            <Button variant={tab === "concierge" ? "default" : "outline"} aria-pressed={tab === "concierge"} onClick={() => setTab("concierge")}>Demandes de conciergerie</Button>
             <Button variant="ghost" onClick={() => void signOut()}>Se déconnecter</Button>
           </div>
           {message && <p role="status" className="dashboard-note">{message}</p>}
-          {tab === "bookings" ? <BookingDashboard live /> : <PropertyManager />}
+          {tab === "bookings" && <BookingDashboard live />}
+          {tab === "properties" && <PropertyManager />}
+          {tab === "concierge" && <ConciergeDashboard />}
         </>
       ) : (
         <>

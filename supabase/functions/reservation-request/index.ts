@@ -115,10 +115,11 @@ Deno.serve(async (request) => {
     };
     const signedAt = new Date();
     const pdf = createBookingContract({
+      bookingId: id,
       live: true,
       details: [property.title, `Dates : du ${arrival} au ${departure}`, `Voyageurs : ${guests}`,
         `Montant du séjour : ${(amount / 100).toFixed(2)} MAD`, `Nom : ${lastName}`, `Prénom : ${firstName}`, `Téléphone : ${phone}`, `E-mail : ${email}`],
-      signedAt: signedAt.toLocaleString("fr-MA", { timeZone: "Africa/Casablanca" }).replace(/\s/g, " "),
+      signedAt,
       recto: photo(front), verso: photo(back), signature: signing,
     });
     const contract = pdf.output("arraybuffer");

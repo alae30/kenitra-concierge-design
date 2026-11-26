@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { houseRules, houseRulesContact } from "@/lib/house-rules";
 import { getPublishedProperties, rentalPhotoUrl, supabase, type RentalProperty } from "@/lib/supabase";
 import { BookingForm } from "@/components/BookingDialog";
+import ConciergeInquiry from "@/components/ConciergeInquiry";
 import PropertiesSection from "@/components/PropertiesSection";
 import brandMark from "@/assets/center-warm-stay.svg";
 import studio from "@/assets/stays/studio.webp";
@@ -43,7 +44,29 @@ const pages = [
   { file: "index.html", label: "Accueil" },
   { file: "logement.html", label: "Logement principal" },
   { file: "conciergerie.html", label: "Conciergerie" },
+  { file: "blog.html", label: "Blog" },
   { file: "contact.html", label: "Contact" },
+];
+
+const homeArticles = [
+  {
+    slug: "location-journaliere-kenitra",
+    image: "avenue-mohammed-v-kenitra-480.webp",
+    title: "Location journalière à Kénitra, comment choisir son logement ?",
+    summary: "Comparez le prix total, le quartier et les conditions d’arrivée avant de réserver.",
+  },
+  {
+    slug: "studio-meuble-centre-ville-kenitra",
+    image: "gare-kenitra-480.webp",
+    title: "Studio meublé au centre-ville de Kénitra, que vérifier ?",
+    summary: "Vérifiez le trajet depuis la gare, les équipements et les horaires d’arrivée.",
+  },
+  {
+    slug: "week-end-kenitra-location-courte-duree",
+    image: "plage-mehdia-kenitra-480.webp",
+    title: "Week-end à Kénitra, organiser une location courte durée",
+    summary: "Préparez votre séjour en ville et une sortie vers la plage de Mehdia.",
+  },
 ];
 
 function Home() {
@@ -52,8 +75,8 @@ function Home() {
       <section className="home-hero">
         <div className="hero-copy">
           <p className="eyebrow">Kénitra, Maroc</p>
-          <h1>Un séjour à Kénitra, <em>comme chez soi.</em></h1>
-          <p className="intro">Découvrez Center Warm Stay, un studio aménagé pour cuisiner, se détendre et profiter de la ville à votre rythme.</p>
+          <h1>Location courte durée à Kénitra, <em>comme chez soi.</em></h1>
+          <p className="intro">Séjournez dans notre studio meublé au centre-ville de Kénitra, avec cuisine ouverte, lit double et coin salon. Vous pouvez envoyer votre demande de réservation directement sur le site.</p>
           <a className="stay-button" href="./logement.html">Découvrir le logement</a>
         </div>
         <figure className="hero-photo">
@@ -62,19 +85,36 @@ function Home() {
           <figcaption>Center Warm Stay, Kénitra</figcaption>
         </figure>
       </section>
-      <section className="home-links">
+      <section className="home-links" aria-label="Réservation et conciergerie">
         <div>
           <p className="eyebrow">Logement principal</p>
           <h2>Center Warm Stay</h2>
           <p>Studio avec cuisine ouverte, coin salon et espace nuit.</p>
-          <a href="./logement.html#reservation">Simuler un séjour</a>
+          <a href="./logement.html#reservation">Réserver un séjour</a>
         </div>
         <div>
           <p className="eyebrow">Autres logements</p>
-          <h2>La conciergerie</h2>
-          <p>Explorez les autres types de séjours proposés dans la démo.</p>
-          <a href="./conciergerie.html">Voir les autres logements</a>
+          <h2>Conciergerie à Kénitra</h2>
+          <p>Découvrez nos logements et notre service pour les propriétaires à Kénitra et dans sa région.</p>
+          <a href="./conciergerie.html#proprietaires">Confier mon logement</a>
+          <a className="ml-4" href="./conciergerie.html">Voir les autres logements</a>
         </div>
+      </section>
+      <section className="editorial-section home-editorial" aria-labelledby="home-guides-title">
+        <h2 id="home-guides-title">Nos guides pour séjourner à Kénitra</h2>
+        <div className="editorial-grid">
+          {homeArticles.map(({ slug, image, title, summary }) => (
+            <article className="stay-card editorial-card" key={slug}>
+              <a className="home-article-link" href={`./blog/${slug}.html`}>
+                <img className="editorial-thumb" src={`./images/blog/${image}`} alt=""
+                  width={480} height={300} loading="lazy" decoding="async" />
+                <h3>{title}</h3>
+              </a>
+              <p>{summary}</p>
+            </article>
+          ))}
+        </div>
+        <a className="stay-button mt-5" href="./blog.html">Voir tous les articles</a>
       </section>
     </>
   );
@@ -155,9 +195,9 @@ function MainStay({ rentals }: { rentals: RentalProperty[] | null }) {
           </div>
         </div>
         <section id="reservation" className="booking-panel" aria-labelledby="booking-title">
-          <p className="eyebrow">{supabase ? "Réservation" : "Réservation · Démonstration"}</p>
+          <p className="eyebrow">Réservation</p>
           <h2 id="booking-title">Préparer mon séjour</h2>
-          {!supabase || rental ? <BookingForm property={property} /> : <p>{rentals === null ? "Chargement…" : "Les réservations en ligne pour ce logement sont momentanément indisponibles."}</p>}
+          {rental ? <BookingForm property={property} /> : <p>{supabase && rentals === null ? "Chargement…" : "Les réservations en ligne pour ce logement sont momentanément indisponibles."}</p>}
         </section>
       </div>
     </>
@@ -170,9 +210,11 @@ function Concierge({ rentals }: { rentals: RentalProperty[] | null }) {
       <section className="page-intro">
         <p className="eyebrow">Conciergerie · Kénitra et alentours</p>
         <h1>Autres logements</h1>
-        <p className="intro">{supabase ? "Découvrez les logements disponibles à Kénitra et aux alentours." : "Parcourez les logements, photos et tarifs d’exemple de cette démonstration."}</p>
+        <p className="intro">Découvrez les logements proposés à Kénitra et dans sa région, ou parlez-nous du bien que vous souhaitez mettre en location courte durée.</p>
+        <a className="stay-button mt-5" href="#proprietaires">Confier mon logement</a>
       </section>
       <PropertiesSection rentals={rentals} />
+      <ConciergeInquiry />
     </>
   );
 }

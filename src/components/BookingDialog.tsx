@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ChangeEvent, type FormEvent, type PointerEvent } from "react";
+import { useEffect, useId, useRef, useState, type ChangeEvent, type FormEvent, type PointerEvent } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,9 @@ function IdentityPhoto({ side }: { side: "Recto" | "Verso" }) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState("");
   const [error, setError] = useState("");
+  const [choosing, setChoosing] = useState(false);
+  const choicesId = useId();
+  const trigger = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!file) {
@@ -34,6 +37,9 @@ function IdentityPhoto({ side }: { side: "Recto" | "Verso" }) {
     const image = input.files?.[0];
     if (!image) return;
 
+    setChoosing(false);
+    trigger.current?.focus();
+
     if (otherInput) otherInput.value = "";
     if (!["image/jpeg", "image/png"].includes(image.type) || !image.size || image.size > 5 * 1024 * 1024) {
       input.value = "";
@@ -47,15 +53,21 @@ function IdentityPhoto({ side }: { side: "Recto" | "Verso" }) {
 
   return (
     <fieldset className="grid min-w-0 gap-2 text-sm">
-      <legend className="mb-2">{side}</legend>
+      <legend className="sr-only">{side}</legend>
       <input ref={camera} name={name} type="file" accept="image/jpeg,image/png" capture="environment"
         hidden onChange={(event) => selectPhoto(event, picker.current)} />
       <input ref={picker} name={name} type="file" accept="image/jpeg,image/png"
         hidden onChange={(event) => selectPhoto(event, camera.current)} />
-      <Button type="button" variant="outline" aria-label={`Prendre une photo du ${name}`}
-        onClick={() => camera.current?.click()}>Prendre une photo</Button>
-      <Button type="button" variant="outline" aria-label={`Choisir un fichier pour le ${name}`}
-        onClick={() => picker.current?.click()}>Choisir un fichier</Button>
+      <Button ref={trigger} type="button" className="h-auto min-h-11 bg-[#a34e37] text-white hover:bg-[#843b29]"
+        aria-expanded={choosing} aria-controls={choicesId} onClick={() => setChoosing(!choosing)}>
+        {file ? "Remplacer" : "Ajouter"} le {name}
+      </Button>
+      <div id={choicesId} hidden={!choosing} className={choosing ? "grid gap-2" : undefined}>
+        <Button type="button" variant="outline" aria-label={`Prendre une photo du ${name}`}
+          onClick={() => camera.current?.click()}>Prendre une photo</Button>
+        <Button type="button" variant="outline" aria-label={`Choisir un fichier pour le ${name}`}
+          onClick={() => picker.current?.click()}>Choisir un fichier</Button>
+      </div>
       {error && <span role="alert">{error}</span>}
       {file && <span role="status" className="break-all">{file.name}</span>}
       {preview && <img className="h-24 w-full rounded-md object-contain bg-muted" src={preview} alt={`Aperçu du ${name}`} />}
@@ -172,6 +184,7 @@ export function BookingForm({ property }: { property: Property }) {
         return;
       }
       const pdf = createBookingContract({
+        bookingId: booking.id,
         details: [
           property.title,
           `Dates : du ${arrival} au ${departure}`,
@@ -182,7 +195,7 @@ export function BookingForm({ property }: { property: Property }) {
           `Téléphone : ${phone}`,
           `E-mail : ${booking.email}`,
         ],
-        signedAt: new Date().toLocaleString("fr-MA", { timeZone: "Africa/Casablanca" }).replace(/\s/g, " "),
+        signedAt: new Date(booking.createdAt),
         recto: frontImage,
         verso: backImage,
         signature,
@@ -224,7 +237,7 @@ export function BookingForm({ property }: { property: Property }) {
         {!live && <p className="text-sm text-muted-foreground sm:col-span-2">Utilise des coordonnées fictives pour cette démonstration.</p>}
       </div>
       <fieldset className="grid min-w-0 gap-2 rounded-lg border p-3">
-        <legend className="px-1 text-sm font-semibold">Carte d’identité marocaine</legend>
+        <legend className="px-1 text-sm font-semibold">Pièce d’identité</legend>
         <p className="text-sm text-muted-foreground">{live ? "Les images seront incluses au contrat, accessible à la conciergerie dans son espace administrateur." : "Utilise deux images fictives. Elles seront intégrées au contrat PDF téléchargé sur cet appareil."}</p>
         <p className="text-sm text-muted-foreground">JPEG ou PNG, 5 Mo maximum par image.</p>
         <div className="grid gap-3 sm:grid-cols-2">

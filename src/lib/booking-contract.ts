@@ -27,10 +27,11 @@ export async function readContractPhoto(file: File): Promise<ContractImage> {
 }
 
 export function createBookingContract({
-  details, signedAt, recto, verso, signature, live = false,
+  bookingId, details, signedAt, recto, verso, signature, live = false,
 }: {
+  bookingId: string;
   details: string[];
-  signedAt: string;
+  signedAt: Date;
   recto: ContractImage;
   verso: ContractImage;
   signature: string | Uint8Array;
@@ -38,21 +39,28 @@ export function createBookingContract({
 }) {
   const pdf = new jsPDF();
   pdf.setProperties({ title: live ? "Contrat de séjour" : "Contrat de séjour — Démonstration" });
-  pdf.addImage(contractLogo, "PNG", 18, 12, 15, 13.3);
+  const center = pdf.internal.pageSize.getWidth() / 2;
+  const timeZone = "Africa/Casablanca";
+  const date = new Intl.DateTimeFormat("fr-FR", { timeZone, day: "2-digit", month: "2-digit", year: "numeric" }).format(signedAt);
+  const reference = `CWS-${bookingId.replace(/-/g, "").slice(0, 12).toUpperCase()}`;
+  pdf.addImage(contractLogo, "PNG", center - 7.5, 10, 15, 13.3);
   pdf.setTextColor("#79412e");
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(11);
-  pdf.text("CENTER WARM STAY", 37, 21);
+  pdf.text("CENTER WARM STAY", center, 29, { align: "center" });
   pdf.setDrawColor("#d8bbab");
-  pdf.line(18, 28, 192, 28);
+  pdf.line(18, 34, 192, 34);
   pdf.setTextColor("#29201a");
   pdf.setFontSize(21);
-  pdf.text("Contrat de séjour", 18, 39);
+  pdf.text("Contrat de séjour", 18, 44);
   pdf.setFontSize(10);
   pdf.setFont("helvetica", "normal");
-  pdf.text(live ? "DEMANDE SOUMISE À CONFIRMATION" : "DÉMONSTRATION", 18, 46);
+  pdf.text(live ? "DEMANDE SOUMISE À CONFIRMATION" : "DÉMONSTRATION", 18, 51);
+  pdf.setTextColor("#79412e");
+  pdf.text(`Réf. ${reference} · ${date}`, 18, 57);
+  pdf.setTextColor("#29201a");
 
-  let y = 54;
+  let y = 65;
   function writeParagraph(text: string, size: number, bold = false) {
     pdf.setFont("helvetica", bold ? "bold" : "normal");
     pdf.setFontSize(size);
@@ -99,7 +107,8 @@ export function createBookingContract({
   pdf.text("Signature du voyageur", 18, 223);
   pdf.setFont("helvetica", "normal");
   pdf.setFontSize(10);
-  pdf.text(`Règlement accepté et signé le ${signedAt}`, 18, 231);
+  const dateAndTime = signedAt.toLocaleString("fr-MA", { timeZone }).replace(/\s/g, " ");
+  pdf.text(`Règlement accepté et signé le ${dateAndTime}`, 18, 231);
   pdf.addImage(signature, "PNG", 18, 239, 128, 40);
   return pdf;
 }
