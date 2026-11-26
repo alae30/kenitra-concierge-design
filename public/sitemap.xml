@@ -1,14 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url><loc>https://centerwarmstay.com/</loc></url>
   <url><loc>https://centerwarmstay.com/logement.html</loc></url>
   <url><loc>https://centerwarmstay.com/conciergerie.html</loc></url>
   <url><loc>https://centerwarmstay.com/contact.html</loc></url>
   <url><loc>https://centerwarmstay.com/blog.html</loc></url>
-  <url><loc>https://centerwarmstay.com/blog/location-journaliere-kenitra.html</loc></url>
-  <url><loc>https://centerwarmstay.com/blog/studio-meuble-centre-ville-kenitra.html</loc></url>
-  <url><loc>https://centerwarmstay.com/blog/week-end-kenitra-location-courte-duree.html</loc></url>
-  <url><loc>https://centerwarmstay.com/blog/conciergerie-location-courte-duree-kenitra.html</loc></url>
-  <url><loc>https://centerwarmstay.com/blog/gestion-locative-kenitra-preparer-logement.html</loc></url>
-  <url><loc>https://centerwarmstay.com/blog/conciergerie-mehdia-kenitra-region.html</loc></url>
+  <url>
+    <loc>https://centerwarmstay.com/blog/location-journaliere-kenitra.html</loc>
+    <image:image><image:loc>https://centerwarmstay.com/images/blog/ruelle-bleue-chefchaouen.webp</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://centerwarmstay.com/blog/studio-meuble-centre-ville-kenitra.html</loc>
+    <image:image><image:loc>https://centerwarmstay.com/images/blog/porte-bab-al-soufara-rabat.webp</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://centerwarmstay.com/blog/week-end-kenitra-location-courte-duree.html</loc>
+    <image:image><image:loc>https://centerwarmstay.com/images/blog/artisanat-essaouira-maroc.webp</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://centerwarmstay.com/blog/conciergerie-location-courte-duree-kenitra.html</loc>
+    <image:image><image:loc>https://centerwarmstay.com/images/blog/kasbah-amridil-skoura.webp</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://centerwarmstay.com/blog/gestion-locative-kenitra-preparer-logement.html</loc>
+    <image:image><image:loc>https://centerwarmstay.com/images/blog/plafond-palais-bahia-marrakech.webp</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://centerwarmstay.com/blog/conciergerie-mehdia-kenitra-region.html</loc>
+    <image:image><image:loc>https://centerwarmstay.com/images/blog/grottes-hercule-tanger.webp</image:loc></image:image>
+  </url>
 </urlset>

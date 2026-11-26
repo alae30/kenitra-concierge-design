@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
-import { readdirSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
@@ -13,7 +13,22 @@ export default defineConfig(({ mode }) => ({
       overlay: false,
     },
   },
-  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  plugins: [
+    react(),
+    mode === "development" && componentTagger(),
+    {
+      name: "shared-site-footer",
+      transformIndexHtml: {
+        order: "pre",
+        handler(html, { filename }) {
+          const isArticle = path.dirname(filename) === path.resolve(__dirname, "blog");
+          const footer = readFileSync(path.resolve(__dirname, "src/site-footer.html"), "utf8")
+            .replaceAll("{{prefix}}", isArticle ? "../" : "./");
+          return html.replace("</body>", footer + "</body>");
+        },
+      },
+    },
+  ].filter(Boolean),
   build: {
     rollupOptions: {
       input: {

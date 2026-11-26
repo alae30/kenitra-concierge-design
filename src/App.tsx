@@ -51,19 +51,19 @@ const pages = [
 const homeArticles = [
   {
     slug: "location-journaliere-kenitra",
-    image: "avenue-mohammed-v-kenitra-480.webp",
+    image: "ruelle-bleue-chefchaouen-480.webp",
     title: "Location journalière à Kénitra, comment choisir son logement ?",
     summary: "Comparez le prix total, le quartier et les conditions d’arrivée avant de réserver.",
   },
   {
     slug: "studio-meuble-centre-ville-kenitra",
-    image: "gare-kenitra-480.webp",
+    image: "porte-bab-al-soufara-rabat-480.webp",
     title: "Studio meublé au centre-ville de Kénitra, que vérifier ?",
     summary: "Vérifiez le trajet depuis la gare, les équipements et les horaires d’arrivée.",
   },
   {
     slug: "week-end-kenitra-location-courte-duree",
-    image: "plage-mehdia-kenitra-480.webp",
+    image: "artisanat-essaouira-maroc-480.webp",
     title: "Week-end à Kénitra, organiser une location courte durée",
     summary: "Préparez votre séjour en ville et une sortie vers la plage de Mehdia.",
   },
@@ -360,12 +360,6 @@ export default function App() {
       <main className="stay-shell">
         {dashboardPage ? <Suspense fallback={<p>Chargement du tableau de bord…</p>}><AdminWorkspace /></Suspense> : rulesPage ? <HouseRules /> : page?.file === "logement.html" ? <MainStay rentals={rentals} /> : page?.file === "conciergerie.html" ? <Concierge rentals={rentals} /> : page?.file === "contact.html" ? <Contact /> : <Home />}
       </main>
-      <footer className="stay-footer">
-        <div className="stay-shell">
-          <BrandLink />
-          <StayAddress />
-        </div>
-      </footer>
     </TooltipProvider>
   );
 }
